@@ -1558,11 +1558,11 @@ body {
             <form id="login-form">
                 <div class="input-group">
                     <label for="username">Citizen ID / Username</label>
-                    <input type="text" id="username" placeholder="Enter your username" required>
+                    <input type="text" id="username" placeholder="Enter your username">
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <input type="password" id="password" placeholder="Enter your password">
                 </div>
                 <button type="submit" class="btn-login">Access Portal</button>
             </form>
@@ -1937,7 +1937,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loginForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        const username = document.getElementById('username').value;
+        const username = document.getElementById('username').value || 'Citizen';
         currentUser = username;
         loginScreen.classList.add('hidden');
         app.classList.remove('hidden');

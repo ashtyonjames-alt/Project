@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loginForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        const username = document.getElementById('username').value;
+        const username = document.getElementById('username').value || 'Citizen';
         currentUser = username;
         loginScreen.classList.add('hidden');
         app.classList.remove('hidden');
