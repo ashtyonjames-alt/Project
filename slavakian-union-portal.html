@@ -2540,8 +2540,78 @@ function simulateUpload(type) {
 
 function triggerEmergency() {
     showModal(
-        '<div style="text-align:center"><h2 style="color:#c62828">EMERGENCY SERVICES</h2><p style="margin-top:15px;font-size:16px">Connecting to <strong>simulated AI dispatcher</strong>...</p><div style="margin:20px 0"><div style="width:50px;height:50px;border:4px solid #c62828;border-top-color:transparent;border-radius:50%;margin:0 auto;animation:spin 1s linear infinite"></div></div><p style="font-size:14px;color:#555">Simulated location data shared with AI dispatcher.</p><p style="font-size:14px;color:#555;margin-top:5px">GPS: 48.2082, 16.3738 (District 7) <em>(fictional coordinates)</em></p><div style="margin-top:20px;padding:12px;background:#fff3e0;border:2px solid #e65100;border-radius:8px"><p style="font-size:13px;color:#c62828;font-weight:700">&#9888; DISCLAIMER: THIS IS A FICTIONAL APPLICATION.</p><p style="font-size:12px;color:#e65100;margin-top:5px">This button connects to a <strong>simulated AI dispatcher that is not real</strong>. All phone numbers in this application are fictional and <strong>incapable of reaching real people or emergency services</strong>. No real calls are placed, no real data is transmitted. If you are experiencing a real emergency, please contact your local emergency services immediately.</p></div><style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style></div>'
+        '<div style="text-align:center">' +
+        '<h2 style="color:#c62828">EMERGENCY SERVICES</h2>' +
+        '<p style="margin-top:10px;font-size:14px">Connecting to <strong>simulated AI dispatcher</strong>...</p>' +
+        '<div id="emg-spinner" style="margin:15px 0"><div style="width:40px;height:40px;border:4px solid #c62828;border-top-color:transparent;border-radius:50%;margin:0 auto;animation:spin 0.4s linear infinite"></div></div>' +
+        '<div id="emg-chat" style="display:none;text-align:left;margin-top:10px">' +
+            '<div id="emg-messages" style="background:#f5f5f5;border-radius:8px;padding:10px;max-height:200px;overflow-y:auto;font-size:13px"></div>' +
+            '<div style="display:flex;gap:6px;margin-top:8px">' +
+                '<input type="text" id="emg-input" placeholder="Speak to dispatcher..." style="flex:1;padding:8px;border:1px solid #ccc;border-radius:6px;font-size:13px" onkeypress="if(event.key===\'Enter\')sendEmgMsg()">' +
+                '<button onclick="sendEmgMsg()" style="padding:8px 14px;background:#c62828;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">Send</button>' +
+            '</div>' +
+        '</div>' +
+        '<p style="font-size:11px;color:#999;margin-top:8px">GPS: 48.2082, 16.3738 (District 7) <em>(fictional)</em></p>' +
+        '<div style="margin-top:12px;padding:10px;background:#fff3e0;border:2px solid #e65100;border-radius:8px">' +
+            '<p style="font-size:12px;color:#c62828;font-weight:700">&#9888; DISCLAIMER: THIS IS A FICTIONAL APPLICATION.</p>' +
+            '<p style="font-size:11px;color:#e65100;margin-top:4px">This connects to a <strong>simulated AI dispatcher that is not real</strong>. All numbers are fictional and <strong>incapable of reaching real people or services</strong>. No real calls are placed. If you have a real emergency, contact your local emergency services.</p>' +
+        '</div>' +
+        '<style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>' +
+        '</div>'
     );
+    setTimeout(function() {
+        var spinner = document.getElementById('emg-spinner');
+        var chat = document.getElementById('emg-chat');
+        if (spinner) spinner.style.display = 'none';
+        if (chat) {
+            chat.style.display = 'block';
+            addEmgMsg('dispatcher', 'SU Emergency Dispatch AI connected. How can I help you?');
+        }
+    }, 1500);
+}
+
+function addEmgMsg(who, text) {
+    var box = document.getElementById('emg-messages');
+    if (!box) return;
+    var align = who === 'user' ? 'right' : 'left';
+    var bg = who === 'user' ? '#1a237e;color:#fff' : '#e0e0e0;color:#333';
+    var label = who === 'user' ? 'You' : 'Dispatcher';
+    box.innerHTML += '<div style="text-align:' + align + ';margin:6px 0"><span style="display:inline-block;padding:6px 10px;border-radius:10px;background:' + bg + ';max-width:80%;font-size:12px"><strong>' + label + ':</strong> ' + text + '</span></div>';
+    box.scrollTop = box.scrollHeight;
+}
+
+function getDispatcherResponse(msg) {
+    var m = msg.toLowerCase().trim();
+    var words = m.split(' ').length;
+    if (m.length < 2) return 'I did not understand. Can you repeat?';
+    if (words > 12) return 'I am sorry, I did not understand all of that. Can you describe your emergency in fewer words?';
+    if (words > 7) return 'I am having trouble understanding. Please keep it simple. What is the emergency?';
+    if (/^(hi|hello|hey)/.test(m)) return 'Hello. What is your emergency?';
+    if (/help/.test(m)) return 'Ok, what can I help you with?';
+    if (/fire/.test(m)) return 'Fire reported. Dispatching fire unit to your location. Stay away from smoke.';
+    if (/police|cop|officer|crime|robbery|robbed|stole|stolen|theft|broke in|break in|burglar/.test(m)) return 'Police unit notified. Stay in a safe location. Do not confront anyone.';
+    if (/ambulance|hurt|injured|bleeding|pain|chest|breath|heart|faint|unconscious|fell/.test(m)) return 'Medical unit dispatched. Stay calm and keep the person still. Help is on the way.';
+    if (/accident|crash|collision/.test(m)) return 'Accident reported. Emergency units dispatched. Are there injuries?';
+    if (/yes/.test(m) && words < 4) return 'Understood. Help is on the way. Stay on the line.';
+    if (/no/.test(m) && words < 4) return 'Ok. Stay where you are. A unit will arrive shortly.';
+    if (/thank|thanks/.test(m)) return 'Stay safe. Units are en route.';
+    if (/where|location|address/.test(m)) return 'Your location is registered as District 7, GPS 48.2082, 16.3738.';
+    if (/how long|when|eta|time/.test(m)) return 'Estimated response time: 8-12 minutes.';
+    if (/ok|okay|alright|got it|understood/.test(m)) return 'Is there anything else?';
+    if (/bye|cancel|end|hang up|close/.test(m)) return 'Call ending. Stay safe.';
+    return 'I do not understand. Please say something like "I need help" or "there is a fire."';
+}
+
+function sendEmgMsg() {
+    var input = document.getElementById('emg-input');
+    if (!input) return;
+    var msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    addEmgMsg('user', msg);
+    setTimeout(function() {
+        addEmgMsg('dispatcher', getDispatcherResponse(msg));
+    }, 600 + Math.random() * 800);
 }
 
 var isOnTrack = true;
