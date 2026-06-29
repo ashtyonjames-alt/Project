@@ -1843,38 +1843,38 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
             </div>
             <ul class="nav-menu">
                 <li class="nav-item active" data-section="dashboard">
-                    <span class="nav-icon">&#9776;</span> Dashboard
+                    <span class="nav-icon">&#9776;</span> <span data-i18n="nav_dashboard">Dashboard</span>
                 </li>
                 <li class="nav-item" data-section="immigration">
-                    <span class="nav-icon">&#9992;</span> Immigration Hub
+                    <span class="nav-icon">&#9992;</span> <span data-i18n="nav_immigration">Immigration Hub</span>
                 </li>
                 <li class="nav-item" data-section="residency">
-                    <span class="nav-icon">&#8962;</span> Address & Residency
+                    <span class="nav-icon">&#8962;</span> <span data-i18n="nav_residency">Address & Residency</span>
                 </li>
                 <li class="nav-item" data-section="documents">
-                    <span class="nav-icon">&#128196;</span> Document Vault
+                    <span class="nav-icon">&#128196;</span> <span data-i18n="nav_documents">Document Vault</span>
                 </li>
                 <li class="nav-item" data-section="transport">
-                    <span class="nav-icon">&#128663;</span> Transport & Safety
+                    <span class="nav-icon">&#128663;</span> <span data-i18n="nav_transport">Transport & Safety</span>
                 </li>
                 <li class="nav-item" data-section="suig">
-                    <span class="nav-icon">&#128176;</span> SUIG Grant
+                    <span class="nav-icon">&#128176;</span> <span data-i18n="nav_suig">SUIG Grant</span>
                 </li>
                 <li class="nav-item" data-section="healthcare">
-                    <span class="nav-icon">&#9829;</span> Healthcare
+                    <span class="nav-icon">&#9829;</span> <span data-i18n="nav_healthcare">Healthcare</span>
                 </li>
                 <li class="nav-item" data-section="jobs">
-                    <span class="nav-icon">&#128188;</span> Jobs & Education
+                    <span class="nav-icon">&#128188;</span> <span data-i18n="nav_jobs">Jobs & Education</span>
                 </li>
                 <li class="nav-item" data-section="banking">
-                    <span class="nav-icon">&#127974;</span> Banking
+                    <span class="nav-icon">&#127974;</span> <span data-i18n="nav_banking">Banking</span>
                 </li>
                 <li class="nav-item" data-section="settings">
-                    <span class="nav-icon">&#9881;</span> Settings
+                    <span class="nav-icon">&#9881;</span> <span data-i18n="nav_settings">Settings</span>
                 </li>
             </ul>
             <div class="sidebar-footer">
-                <button id="logout-btn" class="btn-logout">Logout</button>
+                <button id="logout-btn" class="btn-logout" data-i18n="logout">Logout</button>
             </div>
         </nav>
 
@@ -1992,7 +1992,7 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
 
             <!-- IMMIGRATION HUB -->
             <section id="section-immigration" class="content-section">
-                <h2>Immigration Hub</h2>
+                <h2 data-i18n="nav_immigration">Immigration Hub</h2>
                 <div class="immigration-layout">
                     <div class="imm-checklist">
                         <h3>Path to Residency</h3>
@@ -2053,7 +2053,7 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
 
             <!-- ADDRESS & RESIDENCY -->
             <section id="section-residency" class="content-section">
-                <h2>Address & Residency Verification</h2>
+                <h2 data-i18n="nav_residency">Address & Residency Verification</h2>
                 <div class="residency-layout">
                     <div class="res-card property-search">
                         <h3>Property Search</h3>
@@ -2095,8 +2095,8 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
 
             <!-- DOCUMENT VAULT -->
             <section id="section-documents" class="content-section">
-                <h2>Document Vault</h2>
-                <p class="section-subtitle">Government-protected secure storage for all personal documents</p>
+                <h2 data-i18n="nav_documents">Document Vault</h2>
+                <p class="section-subtitle" data-i18n="doc_vault_desc">Government-protected secure storage for all personal documents</p>
                 <div class="vault-grid">
                     <div class="vault-item" onclick="openVaultDoc('passport')"><div class="vault-icon">&#128210;</div><h4>Passport</h4><span class="vault-status valid">Valid</span><p class="vault-exp">Expires: Mar 2029</p></div>
                     <div class="vault-item" onclick="openVaultDoc('golden-ticket')"><div class="vault-icon">&#127903;</div><h4>Visa / Golden Ticket</h4><span class="vault-status expiring">Expiring Soon</span><p class="vault-exp">Expires: Jul 3, 2024</p></div>
@@ -2120,7 +2120,7 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
 
             <!-- TRANSPORT & SAFETY -->
             <section id="section-transport" class="content-section">
-                <h2>Transport & Safety</h2>
+                <h2 data-i18n="nav_transport">Transport & Safety</h2>
                 <div class="transport-grid">
                     <div class="transport-card"><h3>&#128678; Traffic Laws</h3><ul class="law-list"><li>Speed limit in residential zones: <strong>40 km/h</strong></li><li>Speed limit on highways: <strong>120 km/h</strong></li><li>Right-hand traffic throughout Slavakian Union</li><li>Headlights required 24/7 October-March</li><li>Zero tolerance for mobile phone use while driving</li></ul></div>
                     <div class="transport-card"><h3>&#128248; Speed & Camera Alerts</h3><div class="alert-active"><div class="alert-pulse"></div><span>ACTIVE MONITORING</span></div><div class="camera-list"><div class="camera-item"><span>Volkov St & 3rd Ave</span><span class="cam-type">Red Light</span></div><div class="camera-item"><span>Highway E7 km 42</span><span class="cam-type">Speed</span></div><div class="camera-item"><span>Central Square</span><span class="cam-type">Red Light</span></div></div></div>
@@ -2132,7 +2132,7 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
 
             <!-- SUIG GRANT -->
             <section id="section-suig" class="content-section">
-                <h2>SUIG Grant Management</h2>
+                <h2 data-i18n="nav_suig">SUIG Grant Management</h2>
                 <div class="suig-layout">
                     <div class="suig-card balance-card"><h3>Grant Balance</h3><p class="big-balance">&#8364; 12,450.00</p><p class="original-grant">Original: &#8364; 25,000.00</p><div class="progress-bar-container"><div class="progress-bar spent" style="width: 50.2%"></div></div><p>50.2% spent</p></div>
                     <div class="suig-card countdown-card"><h3>Grant Deadline</h3><div class="countdown" id="countdown"><div class="countdown-unit"><span class="countdown-num" id="days-left">46</span><span class="countdown-label">Days</span></div><div class="countdown-unit"><span class="countdown-num">14</span><span class="countdown-label">Hours</span></div><div class="countdown-unit"><span class="countdown-num">32</span><span class="countdown-label">Minutes</span></div></div><p class="countdown-warning">60-day utilization window</p></div>
@@ -2147,7 +2147,7 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
 
             <!-- HEALTHCARE -->
             <section id="section-healthcare" class="content-section">
-                <h2>Healthcare & Social Services</h2>
+                <h2 data-i18n="nav_healthcare">Healthcare & Social Services</h2>
                 <div class="healthcare-grid">
                     <div class="health-card"><h3>Universal Healthcare ID</h3><div class="health-id-card"><div class="hid-header">SLAVAKIAN UNION HEALTH SERVICE</div><div class="hid-body"><p class="hid-name" id="health-name">CITIZEN</p><p class="hid-number">HC-2024-448219</p><p class="hid-plan">Universal Care Plan - Tier 2</p><p class="hid-valid">Valid: Jan 2024 - Dec 2025</p></div></div></div>
                     <div class="health-card"><h3>Book Appointment</h3><div class="health-booking"><select id="health-type"><option>Select Service</option><option>General Checkup</option><option>Specialist Referral</option><option>Vaccination</option><option>Dental</option><option>Mental Health</option><option>Emergency Follow-up</option></select><select id="health-facility"><option>Select Facility</option><option>Central District Hospital</option><option>Volkov Street Clinic</option><option>University Medical Center</option><option>District 7 Health Post</option></select><input type="date" id="health-date"><button class="btn-primary" onclick="bookHealthAppt()">Book</button></div><div id="health-appt-confirm" class="hidden confirm-msg">&#10003; Appointment booked successfully</div></div>
@@ -2161,7 +2161,7 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
 
             <!-- JOBS & EDUCATION -->
             <section id="section-jobs" class="content-section">
-                <h2>Jobs & Education</h2>
+                <h2 data-i18n="nav_jobs">Jobs & Education</h2>
                 <div class="jobs-grid">
                     <div class="jobs-card"><h3>Employment Status</h3><div class="employment-info"><div class="status-badge status-active">WORK ELIGIBLE</div><p><strong>Permit Type:</strong> Full Employment</p><p><strong>Valid Until:</strong> December 2025</p><p><strong>Restrictions:</strong> None</p></div></div>
                     <div class="jobs-card"><h3>&#127894; Military Recruitment</h3><div class="military-info"><div class="eligibility-check"><p>Eligibility Status:</p><div class="status-badge status-active">ELIGIBLE</div></div><div class="military-branches"><div class="branch-item" onclick="applyMilitary('army')"><span>&#9876;</span> Slavakian Army</div><div class="branch-item" onclick="applyMilitary('navy')"><span>&#9875;</span> Slavakian Navy</div><div class="branch-item" onclick="applyMilitary('air')"><span>&#9992;</span> Air Defense Force</div></div><button class="btn-primary" onclick="alert('Application submitted to Slavakian Defense Ministry')">Begin Application</button></div></div>
@@ -2172,7 +2172,7 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
 
             <!-- BANKING -->
             <section id="section-banking" class="content-section">
-                <h2>Banking Integration</h2>
+                <h2 data-i18n="nav_banking">Banking Integration</h2>
                 <div class="banking-grid">
                     <div class="bank-card"><h3>Digital Bank ID</h3><div class="bank-id-card"><div class="bid-header">SLAVIK NATIONAL SECURITY BANK</div><div class="bid-body"><p class="bid-name" id="bank-name">CITIZEN</p><p class="bid-number">Account: ****4821</p><p class="bid-type">Checking Account - Standard</p><p class="bid-since">Member since: January 2024</p></div></div></div>
                     <div class="bank-card"><h3>Account Balance</h3><div class="balance-display"><p class="balance-amount">&#8364; 8,247.33</p><p class="balance-label">Available Balance</p></div><div class="balance-breakdown"><div class="bb-item"><span>Checking</span><span>&#8364; 5,247.33</span></div><div class="bb-item"><span>Savings</span><span>&#8364; 3,000.00</span></div></div></div>
@@ -2206,11 +2206,11 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
                         <h3>&#127760; <span data-i18n="language">Language</span></h3>
                         <p class="setting-desc" style="margin-bottom:12px" data-i18n="select_lang">Select your preferred language</p>
                         <div class="lang-selector">
-                            <button class="lang-btn active" onclick="setLanguage('en')">English</button>
-                            <button class="lang-btn" onclick="setLanguage('sk')">Slavakian</button>
-                            <button class="lang-btn" onclick="setLanguage('ru')">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</button>
-                            <button class="lang-btn" onclick="setLanguage('de')">Deutsch</button>
-                            <button class="lang-btn" onclick="setLanguage('fr')">Fran&#231;ais</button>
+                            <button class="lang-btn active" onclick="setLanguage('en',this)">English</button>
+                            <button class="lang-btn" onclick="setLanguage('sk',this)">Slavakian</button>
+                            <button class="lang-btn" onclick="setLanguage('ru',this)">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</button>
+                            <button class="lang-btn" onclick="setLanguage('de',this)">Deutsch</button>
+                            <button class="lang-btn" onclick="setLanguage('fr',this)">Fran&#231;ais</button>
                         </div>
                     </div>
 
@@ -2811,6 +2811,10 @@ function toggleNotif(type, enabled) {
 /* ===== LANGUAGE / MULTI-LINGUAL ===== */
 var translations = {
     en: {
+        nav_dashboard: 'Dashboard', nav_immigration: 'Immigration Hub', nav_residency: 'Address & Residency',
+        nav_documents: 'Document Vault', nav_transport: 'Transport & Safety', nav_suig: 'SUIG Grant',
+        nav_healthcare: 'Healthcare & Social Services', nav_jobs: 'Jobs & Education', nav_banking: 'Banking Integration',
+        nav_settings: 'Settings', logout: 'Logout', doc_vault_desc: 'Government-protected secure storage for all personal documents',
         dashboard: 'Home Dashboard', settings: 'Settings & Personalization',
         residency_status: 'Residency Status', golden_ticket: 'Golden Ticket',
         immigration_progress: 'Immigration Progress', upcoming_appts: 'Upcoming Appointments',
@@ -2837,6 +2841,10 @@ var translations = {
         sbis_messages: 'SBIS Messages', sbis_messages_desc: 'Direct messages from immigration officers'
     },
     sk: {
+        nav_dashboard: 'Prehled', nav_immigration: 'Imigracny Hub', nav_residency: 'Adresa a Pobyt',
+        nav_documents: 'Trezor Dokumentov', nav_transport: 'Doprava a Bezpecnost', nav_suig: 'SUIG Grant',
+        nav_healthcare: 'Zdravotnictvo', nav_jobs: 'Praca a Vzdelavanie', nav_banking: 'Bankovnictvo',
+        nav_settings: 'Nastavenia', logout: 'Odhlasit', doc_vault_desc: 'Vladou chranene ulozisko osobnych dokumentov',
         dashboard: 'Domov Prehled', settings: 'Nastavenia a Personalizacia',
         residency_status: 'Stav Pobytu', golden_ticket: 'Zlaty Listok',
         immigration_progress: 'Postup Imigracie', upcoming_appts: 'Nadchadzajuce Stretnutia',
@@ -2863,6 +2871,10 @@ var translations = {
         sbis_messages: 'SBIS Spravy', sbis_messages_desc: 'Priame spravy od uradnikov'
     },
     ru: {
+        nav_dashboard: 'Панель', nav_immigration: 'Иммиграция', nav_residency: 'Адрес и Проживание',
+        nav_documents: 'Хранилище Документов', nav_transport: 'Транспорт и Безопасность', nav_suig: 'Грант SUIG',
+        nav_healthcare: 'Здравоохранение', nav_jobs: 'Работа и Образование', nav_banking: 'Банковские Услуги',
+        nav_settings: 'Настройки', logout: 'Выйти', doc_vault_desc: 'Защищенное государством хранилище личных документов',
         dashboard: 'Главная Панель', settings: 'Настройки и Персонализация',
         residency_status: 'Статус Проживания', golden_ticket: 'Золотой Билет',
         immigration_progress: 'Прогресс Иммиграции', upcoming_appts: 'Предстоящие Встречи',
@@ -2889,6 +2901,10 @@ var translations = {
         sbis_messages: 'Сообщения SBIS', sbis_messages_desc: 'От офицеров иммиграции'
     },
     de: {
+        nav_dashboard: 'Startseite', nav_immigration: 'Einwanderung', nav_residency: 'Adresse & Aufenthalt',
+        nav_documents: 'Dokumententresor', nav_transport: 'Verkehr & Sicherheit', nav_suig: 'SUIG-Stipendium',
+        nav_healthcare: 'Gesundheitswesen', nav_jobs: 'Arbeit & Bildung', nav_banking: 'Bankwesen',
+        nav_settings: 'Einstellungen', logout: 'Abmelden', doc_vault_desc: 'Staatlich geschützter Speicher für persönliche Dokumente',
         dashboard: 'Startseite', settings: 'Einstellungen & Personalisierung',
         residency_status: 'Aufenthaltsstatus', golden_ticket: 'Goldenes Ticket',
         immigration_progress: 'Einwanderungsfortschritt', upcoming_appts: 'Kommende Termine',
@@ -2897,7 +2913,7 @@ var translations = {
         bank_linking: 'Bankverknüpfung', suig_balance: 'SUIG-Stipendium Saldo',
         active_resident: 'AKTIVER BEWOHNER', scan_verify: 'Zur Verifizierung scannen',
         complete: 'Abgeschlossen', healthcare_reg: 'Gesundheitsregistrierung',
-        bg_check_msg: 'Ihre Hintergrundüberprüfung wurde genehmigt. Bitte fahren Sie fort...',
+        bg_check_msg: 'Ihre Überprüfung wurde genehmigt. Bitte fahren Sie fort...',
         view_all: 'Alle Nachrichten', issued: 'AUSGESTELLT', enrolled: 'EINGESCHRIEBEN',
         eligible: 'BERECHTIGT', work_permit_valid: 'Arbeitserlaubnis: Gültig bis Dez 2025',
         linked: 'VERKNÜPFT', deadline_46: 'Frist: 46 Tage verbleibend',
@@ -2915,6 +2931,10 @@ var translations = {
         sbis_messages: 'SBIS-Nachrichten', sbis_messages_desc: 'Direktnachrichten von Beamten'
     },
     fr: {
+        nav_dashboard: 'Tableau de Bord', nav_immigration: 'Immigration', nav_residency: 'Adresse & Résidence',
+        nav_documents: 'Coffre-fort Documents', nav_transport: 'Transport & Sécurité', nav_suig: 'Bourse SUIG',
+        nav_healthcare: 'Santé & Services Sociaux', nav_jobs: 'Emploi & Éducation', nav_banking: 'Services Bancaires',
+        nav_settings: 'Paramètres', logout: 'Déconnexion', doc_vault_desc: 'Stockage sécurisé par le gouvernement pour tous vos documents',
         dashboard: 'Tableau de Bord', settings: 'Paramètres & Personnalisation',
         residency_status: 'Statut de Résidence', golden_ticket: 'Ticket d\'Or',
         immigration_progress: 'Progrès d\'Immigration', upcoming_appts: 'Rendez-vous à Venir',
@@ -2944,13 +2964,13 @@ var translations = {
 
 var currentLang = localStorage.getItem('su-language') || 'en';
 
-function setLanguage(lang) {
+function setLanguage(lang, el) {
     currentLang = lang;
     localStorage.setItem('su-language', lang);
     document.querySelectorAll('.lang-btn').forEach(function(btn) {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (el) el.classList.add('active');
     applyTranslations();
 }
 
