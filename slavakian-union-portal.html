@@ -1555,7 +1555,7 @@ body {
             <h1>Slavakian Union</h1>
             <h2>National Government Portal</h2>
             <p class="login-subtitle">Secure Access to All Government Services</p>
-            <form id="login-form">
+            <form id="login-form" onsubmit="doLogin(); return false;">
                 <div class="input-group">
                     <label for="username">Citizen ID / Username</label>
                     <input type="text" id="username" placeholder="Enter your username">
@@ -1564,7 +1564,7 @@ body {
                     <label for="password">Password</label>
                     <input type="password" id="password" placeholder="Enter your password">
                 </div>
-                <button type="submit" class="btn-login">Access Portal</button>
+                <button type="button" class="btn-login" onclick="doLogin()">Access Portal</button>
             </form>
             <p class="login-footer">Ministry of Digital Affairs &bull; Slavakian Bureau of Immigration Services</p>
         </div>
@@ -1922,6 +1922,16 @@ body {
 
     <script>
 let currentUser = '';
+
+function doLogin() {
+    var username = document.getElementById('username').value || 'Citizen';
+    currentUser = username;
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('user-display-name').textContent = 'Welcome, ' + username;
+    document.getElementById('health-name').textContent = username.toUpperCase();
+    document.getElementById('bank-name').textContent = username.toUpperCase();
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.getElementById('login-form');
