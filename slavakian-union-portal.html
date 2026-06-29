@@ -2359,19 +2359,20 @@ function navigateTo(section) {
     });
     document.querySelector('[data-section="' + section + '"]').classList.add('active');
 
+    var t = translations[currentLang] || translations.en;
     var titles = {
-        dashboard: 'Dashboard',
-        immigration: 'Immigration Hub',
-        residency: 'Address & Residency',
-        documents: 'Document Vault',
-        transport: 'Transport & Safety',
-        suig: 'SUIG Grant Management',
-        healthcare: 'Healthcare & Social Services',
-        jobs: 'Jobs & Education',
-        banking: 'Banking Integration',
-        settings: 'Settings & Personalization'
+        dashboard: t.nav_dashboard || 'Dashboard',
+        immigration: t.nav_immigration || 'Immigration Hub',
+        residency: t.nav_residency || 'Address & Residency',
+        documents: t.nav_documents || 'Document Vault',
+        transport: t.nav_transport || 'Transport & Safety',
+        suig: t.nav_suig || 'SUIG Grant',
+        healthcare: t.nav_healthcare || 'Healthcare & Social Services',
+        jobs: t.nav_jobs || 'Jobs & Education',
+        banking: t.nav_banking || 'Banking Integration',
+        settings: t.nav_settings || 'Settings'
     };
-    document.getElementById('current-section-title').textContent = titles[section] || 'Dashboard';
+    document.getElementById('current-section-title').textContent = titles[section] || titles.dashboard;
 
     var sidebar = document.getElementById('sidebar');
     if (sidebar.classList.contains('open')) {
@@ -2982,16 +2983,16 @@ function applyTranslations() {
     });
 
     var titles = {
-        dashboard: t.dashboard || 'Dashboard',
-        immigration: 'Immigration Hub',
-        residency: 'Address & Residency',
-        documents: 'Document Vault',
-        transport: 'Transport & Safety',
-        suig: 'SUIG Grant Management',
-        healthcare: 'Healthcare & Social Services',
-        jobs: 'Jobs & Education',
-        banking: 'Banking Integration',
-        settings: t.settings || 'Settings'
+        dashboard: t.nav_dashboard || 'Dashboard',
+        immigration: t.nav_immigration || 'Immigration Hub',
+        residency: t.nav_residency || 'Address & Residency',
+        documents: t.nav_documents || 'Document Vault',
+        transport: t.nav_transport || 'Transport & Safety',
+        suig: t.nav_suig || 'SUIG Grant',
+        healthcare: t.nav_healthcare || 'Healthcare & Social Services',
+        jobs: t.nav_jobs || 'Jobs & Education',
+        banking: t.nav_banking || 'Banking Integration',
+        settings: t.nav_settings || 'Settings'
     };
     var activeNav = document.querySelector('.nav-item.active');
     if (activeNav) {
