@@ -65,19 +65,197 @@ body {
 }
 
 .emblem-shield {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, var(--primary), var(--gold));
-    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    animation: sealSpin 12s linear infinite;
+}
+
+@keyframes sealSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.login-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+}
+
+.login-tab {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+
+.login-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--gold);
+}
+
+.login-tab:hover { color: var(--primary); }
+
+.login-tab-content { display: none; }
+.login-tab-content.active { display: block; }
+
+.about-content {
+    text-align: left;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px 5px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+}
+
+.about-content h3 {
+    color: var(--primary);
+    font-size: 15px;
+    margin: 18px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+}
+
+.about-content h3:first-child { margin-top: 0; }
+
+.about-content p { margin-bottom: 8px; }
+
+.about-content ul {
+    margin: 6px 0 10px 20px;
+    font-size: 12px;
+}
+
+.about-content ul li { margin-bottom: 3px; }
+
+.about-content .about-highlight {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: white;
+    padding: 14px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 13px;
+}
+
+.terms-screen {
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
-    font-weight: bold;
-    color: white;
-    margin: 0 auto;
-    border: 3px solid var(--gold);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    padding: 20px;
 }
+
+.terms-container {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 550px;
+    width: 100%;
+}
+
+.terms-container h2 {
+    color: var(--primary);
+    font-size: 20px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.terms-container .terms-subtitle {
+    color: var(--gold);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.terms-box {
+    background: #f9f9fb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 20px;
+}
+
+.terms-box h4 {
+    color: var(--primary);
+    font-size: 13px;
+    margin: 14px 0 6px;
+}
+
+.terms-box h4:first-child { margin-top: 0; }
+
+.terms-box ol { padding-left: 20px; }
+.terms-box ol li { margin-bottom: 6px; }
+
+.terms-agree {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-size: 13px;
+}
+
+.terms-agree input[type="checkbox"] {
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.btn-accept {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--success), #388e3c);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0.5;
+    pointer-events: none;
+    transition: all 0.3s;
+}
+
+.btn-accept.enabled {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.btn-accept.enabled:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46,125,50,0.4);
+}
+
+.btn-decline {
+    width: 100%;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.btn-decline:hover { color: var(--danger); }
 
 .login-container h1 {
     color: var(--primary);
@@ -1563,6 +1741,15 @@ body.dark-mode .login-container {
 }
 
 body.dark-mode .login-container h1 { color: #7986cb; }
+body.dark-mode .terms-screen { background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #2a2a5e 100%); }
+body.dark-mode .terms-container { background: #1e1e1e; color: #e0e0e0; }
+body.dark-mode .terms-container h2 { color: #7986cb; }
+body.dark-mode .terms-box { background: #2a2a2a; border-color: #444; color: #e0e0e0; }
+body.dark-mode .terms-box h4 { color: #7986cb; }
+body.dark-mode .about-content { color: #e0e0e0; }
+body.dark-mode .about-content h3 { color: #7986cb; border-color: #444; }
+body.dark-mode .login-tab { color: #aaa; }
+body.dark-mode .login-tab.active { color: #7986cb; }
 body.dark-mode .input-group label { color: #e0e0e0; }
 body.dark-mode .input-group input { background: #2a2a2a; color: #e0e0e0; border-color: #444; }
 body.dark-mode .topbar { background: #1e1e1e; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
@@ -1813,23 +2000,237 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
     <div id="login-screen" class="login-screen">
         <div class="login-container">
             <div class="login-emblem">
-                <div class="emblem-shield">SU</div>
+                <div class="emblem-shield">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="120" height="120">
+                        <circle cx="100" cy="100" r="96" fill="#0d1442" stroke="#c9a227" stroke-width="4"/>
+                        <circle cx="100" cy="100" r="84" fill="none" stroke="#c9a227" stroke-width="2"/>
+                        <path d="M100 22 Q102 20 104 22" fill="none" stroke="#c9a227" stroke-width="0.5"/>
+                        <text x="100" y="32" text-anchor="middle" fill="#c9a227" font-size="11" font-weight="bold" font-family="serif" letter-spacing="3">SLABAKCKUY CO103</text>
+                        <text x="100" y="190" text-anchor="middle" fill="#c9a227" font-size="12" font-weight="bold" font-family="serif" letter-spacing="2">SLAVAKIAN UNION</text>
+                        <!-- Eagle -->
+                        <g fill="#c9a227" transform="translate(100,58)">
+                            <ellipse cx="0" cy="0" rx="4" ry="5"/>
+                            <polygon points="-3,-2 -8,-1 -3,1"/>
+                            <polygon points="-35,-15 -28,-5 -18,0 -10,2 -5,0 -8,-8 -15,-12 -22,-15 -30,-16"/>
+                            <polygon points="35,-15 28,-5 18,0 10,2 5,0 8,-8 15,-12 22,-15 30,-16"/>
+                            <polygon points="-35,-15 -38,-18 -30,-14" opacity="0.7"/>
+                            <polygon points="35,-15 38,-18 30,-14" opacity="0.7"/>
+                            <line x1="-32" y1="-16" x2="-36" y2="-20" stroke="#c9a227" stroke-width="1"/>
+                            <line x1="-28" y1="-14" x2="-32" y2="-19" stroke="#c9a227" stroke-width="1"/>
+                            <line x1="32" y1="-16" x2="36" y2="-20" stroke="#c9a227" stroke-width="1"/>
+                            <line x1="28" y1="-14" x2="32" y2="-19" stroke="#c9a227" stroke-width="1"/>
+                            <polygon points="0,3 -3,10 0,8 3,10"/>
+                        </g>
+                        <!-- Stars -->
+                        <g fill="#c9a227" font-size="6">
+                            <text x="75" y="48">&#9733;</text><text x="85" y="43">&#9733;</text>
+                            <text x="95" y="40">&#9733;</text><text x="105" y="40">&#9733;</text>
+                            <text x="115" y="43">&#9733;</text><text x="125" y="48">&#9733;</text>
+                            <text x="60" y="60">&#9733;</text><text x="140" y="60">&#9733;</text>
+                            <text x="55" y="75">&#9733;</text><text x="145" y="75">&#9733;</text>
+                            <text x="55" y="130">&#9733;</text><text x="145" y="130">&#9733;</text>
+                        </g>
+                        <!-- Shield with bear -->
+                        <g transform="translate(100,105)">
+                            <path d="M-28,-25 L-28,10 Q-28,28 0,35 Q28,28 28,10 L28,-25 Z" fill="#0d1442" stroke="#c9a227" stroke-width="2"/>
+                            <!-- Bear -->
+                            <g fill="#c9a227" transform="translate(0,2) scale(0.8)">
+                                <ellipse cx="-5" cy="-8" rx="12" ry="9"/>
+                                <ellipse cx="-18" cy="-14" rx="5" ry="4"/>
+                                <circle cx="-21" cy="-16" r="1.5" fill="#0d1442"/>
+                                <ellipse cx="8" cy="2" rx="15" ry="11"/>
+                                <rect x="-15" y="8" width="7" height="12" rx="3"/>
+                                <rect x="-5" y="10" width="7" height="11" rx="3"/>
+                                <rect x="8" y="8" width="7" height="12" rx="3"/>
+                                <rect x="17" y="6" width="7" height="13" rx="3"/>
+                            </g>
+                            <!-- Ground line -->
+                            <line x1="-22" y1="22" x2="22" y2="22" stroke="#c9a227" stroke-width="1" opacity="0.6"/>
+                        </g>
+                        <!-- Laurel branches -->
+                        <g fill="#c9a227" opacity="0.8">
+                            <ellipse cx="42" cy="100" rx="3" ry="7" transform="rotate(-20,42,100)"/>
+                            <ellipse cx="38" cy="112" rx="3" ry="7" transform="rotate(-10,38,112)"/>
+                            <ellipse cx="37" cy="125" rx="3" ry="7" transform="rotate(0,37,125)"/>
+                            <ellipse cx="40" cy="137" rx="3" ry="7" transform="rotate(10,40,137)"/>
+                            <ellipse cx="46" cy="148" rx="3" ry="7" transform="rotate(20,46,148)"/>
+                            <ellipse cx="158" cy="100" rx="3" ry="7" transform="rotate(20,158,100)"/>
+                            <ellipse cx="162" cy="112" rx="3" ry="7" transform="rotate(10,162,112)"/>
+                            <ellipse cx="163" cy="125" rx="3" ry="7" transform="rotate(0,163,125)"/>
+                            <ellipse cx="160" cy="137" rx="3" ry="7" transform="rotate(-10,160,137)"/>
+                            <ellipse cx="154" cy="148" rx="3" ry="7" transform="rotate(-20,154,148)"/>
+                        </g>
+                        <!-- Sunflowers -->
+                        <g fill="#c9a227">
+                            <circle cx="55" cy="155" r="5" opacity="0.9"/>
+                            <circle cx="55" cy="155" r="2.5" fill="#0d1442"/>
+                            <circle cx="145" cy="155" r="5" opacity="0.9"/>
+                            <circle cx="145" cy="155" r="2.5" fill="#0d1442"/>
+                            <circle cx="70" cy="162" r="4" opacity="0.7"/>
+                            <circle cx="70" cy="162" r="2" fill="#0d1442"/>
+                            <circle cx="130" cy="162" r="4" opacity="0.7"/>
+                            <circle cx="130" cy="162" r="2" fill="#0d1442"/>
+                        </g>
+                    </svg>
+                </div>
             </div>
             <h1>Slavakian Union</h1>
             <h2>National Government Portal</h2>
             <p class="login-subtitle">Secure Access to All Government Services</p>
-            <form id="login-form" onsubmit="doLogin(); return false;">
-                <div class="input-group">
-                    <label for="username">Citizen ID / Username</label>
-                    <input type="text" id="username" placeholder="Enter your username">
+
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('login-tab-login', this)">Login</button>
+                <button class="login-tab" onclick="switchLoginTab('login-tab-about', this)">About Us</button>
+            </div>
+
+            <div id="login-tab-login" class="login-tab-content active">
+                <form id="login-form" onsubmit="doLogin(); return false;">
+                    <div class="input-group">
+                        <label for="username">Citizen ID / Username</label>
+                        <input type="text" id="username" placeholder="Enter your username">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password">
+                    </div>
+                    <button type="button" class="btn-login" onclick="doLogin()">Access Portal</button>
+                </form>
+            </div>
+
+            <div id="login-tab-about" class="login-tab-content">
+                <div class="about-content">
+                    <div class="about-highlight">ABOUT THE SLAVAKIAN UNION<br><span style="font-size:11px;opacity:0.8">An overview of our nation, identity, and values.</span></div>
+
+                    <h3>Welcome to the Slavakian Union</h3>
+                    <p>The Slavakian Union is a sovereign, democratic republic established on 21 November 2024 following its historic declaration of independence. Stretching from the Baltic coast to the Arctic frontier, the Union is a modern European state built on resilience, innovation, and cultural diversity.</p>
+                    <p>Today, Slavakia is one of the most dynamic and rapidly developing nations in the region, committed to security, stability, and prosperity for all who call it home.</p>
+
+                    <h3>Government &amp; Political System</h3>
+                    <p><strong>Type of Government:</strong> Presidential Republic<br><strong>Legislature:</strong> Bicameral Congress</p>
+                    <ul>
+                        <li>National Assembly (Lower Chamber) &mdash; 110 members</li>
+                        <li>Council of Provinces (Upper Chamber) &mdash; 26 members</li>
+                    </ul>
+                    <p>The President serves as Head of State and Government, Commander-in-Chief of the Armed Forces, and guardian of the Constitution.</p>
+                    <p>Core national principles include:</p>
+                    <ul>
+                        <li>Rule of law</li>
+                        <li>Democratic representation</li>
+                        <li>Accountability</li>
+                        <li>Civilian control of the military</li>
+                        <li>Protection of individual rights</li>
+                    </ul>
+
+                    <h3>Provinces &amp; Territories</h3>
+                    <p>The Slavakian Union consists of 13 provinces, each with its own local administration:</p>
+                    <ul>
+                        <li>Baltics</li><li>Pskov</li><li>Novgorod</li><li>St. Petersburg</li><li>Karelia</li><li>Murmansk</li><li>Vologda</li><li>Arkhangelsk</li><li>Nenets</li><li>Komi Republic</li><li>Yamalia</li>
+                    </ul>
+                    <p>The nation spans <strong>1,026,199 square miles</strong> of territory, including vast forests, arctic tundra, and rich coastal regions.</p>
+
+                    <h3>Population &amp; Society</h3>
+                    <p><strong>Population:</strong> ~96.6 million<br><strong>Primary Language:</strong> Slavakian<br><strong>Main Religion:</strong> Protestant (with full religious freedom guaranteed)</p>
+                    <p>Slavakia is known for:</p>
+                    <ul>
+                        <li>Strong community values</li>
+                        <li>Diverse cultural heritage</li>
+                        <li>High literacy and education rates</li>
+                        <li>Robust social programs</li>
+                        <li>A forward-looking, innovation-driven economy</li>
+                    </ul>
+                    <p>The Union embraces immigrants, valuing those who contribute to national growth, security, and prosperity.</p>
+
+                    <h3>Economy</h3>
+                    <p><strong>GDP:</strong> Approximately $11.04 trillion<br><strong>Currency:</strong> Euro (&euro;)</p>
+                    <p>Economic strengths include:</p>
+                    <ul>
+                        <li>Advanced manufacturing</li>
+                        <li>Energy production</li>
+                        <li>Technology and aerospace</li>
+                        <li>Defense industries</li>
+                        <li>Shipping and logistics</li>
+                        <li>Natural resources (forests, arctic minerals, fisheries)</li>
+                    </ul>
+
+                    <h3>National Defense</h3>
+                    <p>The Slavakian Union maintains one of Europe's most capable defense structures, ensuring territorial integrity, allied cooperation, air and maritime security, nuclear deterrence, and peacekeeping operations.</p>
+                    <p><strong>Armed Forces:</strong> Army, Navy, Air Force, Marines, Coast Guard, Space Force, Missile Forces, and the National Guard.</p>
+
+                    <h3>National Values</h3>
+                    <p>The Union was founded on a promise of freedom, sovereignty, and equal opportunity. Its Constitution affirms:</p>
+                    <ul>
+                        <li>Civil liberties</li>
+                        <li>Human rights</li>
+                        <li>Democratic governance</li>
+                        <li>Freedom of expression</li>
+                        <li>Equality under the law</li>
+                        <li>Protection for workers and families</li>
+                    </ul>
+
+                    <h3>Why People Choose the Slavakian Union</h3>
+                    <ul>
+                        <li>Strong social safety nets</li>
+                        <li>Economic opportunity</li>
+                        <li>National stability</li>
+                        <li>World-class infrastructure</li>
+                        <li>Universal healthcare</li>
+                        <li>Public safety and low corruption</li>
+                        <li>Educational advancement</li>
+                    </ul>
+
+                    <div class="about-highlight">Welcome to a Nation Built on Strength and Hope<br><span style="font-size:11px;opacity:0.8">Whether you are a citizen, resident, visitor, or new arrival, the Slavakian Union invites you to take part in its ongoing story &mdash; one defined by resilience, freedom, and opportunity.</span></div>
                 </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password">
-                </div>
-                <button type="button" class="btn-login" onclick="doLogin()">Access Portal</button>
-            </form>
+            </div>
+
             <p class="login-footer">Ministry of Digital Affairs &bull; Slavakian Bureau of Immigration Services</p>
+        </div>
+    </div>
+
+    <!-- TERMS & CONDITIONS -->
+    <div id="terms-screen" class="terms-screen hidden">
+        <div class="terms-container">
+            <h2>Terms &amp; Conditions</h2>
+            <p class="terms-subtitle">Slavakian Union Government Portal</p>
+            <div class="terms-box">
+                <h4>1. Government Application</h4>
+                <p>This application is an official Slavakian Union government-managed and operated digital platform. By accessing and using this portal, you acknowledge that it is developed, maintained, and administered by the Slavakian Union Ministry of Digital Affairs.</p>
+
+                <h4>2. Jurisdiction &amp; Applicable Law</h4>
+                <p>This application and all data processed through it are subject to any and all Slavakian Union cyber laws, data protection regulations, and national security statutes, including but not limited to:</p>
+                <ol>
+                    <li>The Slavakian Digital Governance Act (2024)</li>
+                    <li>The National Cybersecurity &amp; Data Protection Law</li>
+                    <li>The Electronic Communications Regulation</li>
+                    <li>The Government Digital Services Compliance Framework</li>
+                </ol>
+
+                <h4>3. User Obligations</h4>
+                <p>By proceeding, you agree to:</p>
+                <ol>
+                    <li>Use this platform solely for lawful purposes related to government services</li>
+                    <li>Not attempt to circumvent, disable, or interfere with any security features</li>
+                    <li>Provide accurate information when interacting with government services</li>
+                    <li>Comply with all applicable Slavakian Union laws and regulations</li>
+                </ol>
+
+                <h4>4. Data &amp; Privacy</h4>
+                <p>All personal data submitted through this portal is processed in accordance with Slavakian Union data protection laws. The government reserves the right to monitor usage for security purposes as permitted by law.</p>
+
+                <h4>5. Service Availability</h4>
+                <p>The Slavakian Union government makes every effort to ensure continuous availability of this portal but does not guarantee uninterrupted service. Scheduled maintenance and updates may occur without prior notice.</p>
+
+                <h4>6. Liability</h4>
+                <p>The Slavakian Union government shall not be held liable for any indirect, incidental, or consequential damages arising from the use of or inability to use this portal.</p>
+
+                <h4>7. Amendments</h4>
+                <p>The Slavakian Union government reserves the right to modify these terms at any time. Continued use of this portal constitutes acceptance of any amended terms.</p>
+            </div>
+            <label class="terms-agree">
+                <input type="checkbox" id="terms-checkbox" onchange="toggleAcceptBtn()">
+                <span>I have read and agree to the Terms &amp; Conditions. I understand this application is subject to Slavakian Union cyber laws and government regulations.</span>
+            </label>
+            <button id="btn-accept-terms" class="btn-accept" onclick="acceptTerms()">Accept &amp; Continue</button>
+            <button class="btn-decline" onclick="declineTerms()">Decline &amp; Return to Login</button>
         </div>
     </div>
 
@@ -2280,14 +2681,44 @@ body.dark-mode .dash-toggle-item { background: #2a2a2a; }
     <script>
 let currentUser = '';
 
+function switchLoginTab(tabId, btn) {
+    document.querySelectorAll('.login-tab-content').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.login-tab').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+}
+
 function doLogin() {
     var username = document.getElementById('username').value || 'Citizen';
     currentUser = username;
     document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('terms-screen').classList.remove('hidden');
+}
+
+function toggleAcceptBtn() {
+    var cb = document.getElementById('terms-checkbox');
+    var btn = document.getElementById('btn-accept-terms');
+    if (cb.checked) {
+        btn.classList.add('enabled');
+    } else {
+        btn.classList.remove('enabled');
+    }
+}
+
+function acceptTerms() {
+    if (!document.getElementById('terms-checkbox').checked) return;
+    document.getElementById('terms-screen').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
-    document.getElementById('user-display-name').textContent = 'Welcome, ' + username;
-    document.getElementById('health-name').textContent = username.toUpperCase();
-    document.getElementById('bank-name').textContent = username.toUpperCase();
+    document.getElementById('user-display-name').textContent = 'Welcome, ' + currentUser;
+    document.getElementById('health-name').textContent = currentUser.toUpperCase();
+    document.getElementById('bank-name').textContent = currentUser.toUpperCase();
+}
+
+function declineTerms() {
+    document.getElementById('terms-screen').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('terms-checkbox').checked = false;
+    toggleAcceptBtn();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -2304,13 +2735,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loginForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        const username = document.getElementById('username').value || 'Citizen';
-        currentUser = username;
-        loginScreen.classList.add('hidden');
-        app.classList.remove('hidden');
-        document.getElementById('user-display-name').textContent = 'Welcome, ' + username;
-        document.getElementById('health-name').textContent = username.toUpperCase();
-        document.getElementById('bank-name').textContent = username.toUpperCase();
+        doLogin();
     });
 
     navItems.forEach(function (item) {
@@ -2325,6 +2750,8 @@ document.addEventListener('DOMContentLoaded', function () {
         loginScreen.classList.remove('hidden');
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
+        document.getElementById('terms-checkbox').checked = false;
+        toggleAcceptBtn();
     });
 
     menuToggle.addEventListener('click', function () {
