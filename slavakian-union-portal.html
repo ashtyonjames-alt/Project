@@ -2584,22 +2584,69 @@ function getDispatcherResponse(msg) {
     var m = msg.toLowerCase().trim();
     var words = m.split(' ').length;
     if (m.length < 2) return 'I did not understand. Can you repeat?';
-    if (words > 12) return 'I am sorry, I did not understand all of that. Can you describe your emergency in fewer words?';
-    if (words > 7) return 'I am having trouble understanding. Please keep it simple. What is the emergency?';
-    if (/^(hi|hello|hey)/.test(m)) return 'Hello. What is your emergency?';
-    if (/help/.test(m)) return 'Ok, what can I help you with?';
-    if (/fire/.test(m)) return 'Fire reported. Dispatching fire unit to your location. Stay away from smoke.';
-    if (/police|cop|officer|crime|robbery|robbed|stole|stolen|theft|broke in|break in|burglar/.test(m)) return 'Police unit notified. Stay in a safe location. Do not confront anyone.';
-    if (/ambulance|hurt|injured|bleeding|pain|chest|breath|heart|faint|unconscious|fell/.test(m)) return 'Medical unit dispatched. Stay calm and keep the person still. Help is on the way.';
-    if (/accident|crash|collision/.test(m)) return 'Accident reported. Emergency units dispatched. Are there injuries?';
-    if (/yes/.test(m) && words < 4) return 'Understood. Help is on the way. Stay on the line.';
-    if (/no/.test(m) && words < 4) return 'Ok. Stay where you are. A unit will arrive shortly.';
-    if (/thank|thanks/.test(m)) return 'Stay safe. Units are en route.';
-    if (/where|location|address/.test(m)) return 'Your location is registered as District 7, GPS 48.2082, 16.3738.';
-    if (/how long|when|eta|time/.test(m)) return 'Estimated response time: 8-12 minutes.';
-    if (/ok|okay|alright|got it|understood/.test(m)) return 'Is there anything else?';
-    if (/bye|cancel|end|hang up|close/.test(m)) return 'Call ending. Stay safe.';
-    return 'I do not understand. Please say something like "I need help" or "there is a fire."';
+    if (words > 20) return 'I am sorry, I cannot process that. Please describe your emergency in a short sentence.';
+    if (words > 14) return 'That is too complex for me to understand. Can you tell me the main problem in fewer words?';
+
+    if (/^(hi|hello|hey|good morning|good evening|good afternoon)/.test(m)) return 'Hello. What is your emergency?';
+    if (/^(help|i need help|please help|help me|sos)/.test(m)) return 'Ok, what can I help you with?';
+
+    if (/fire|burning|flames|smoke|arson/.test(m)) return 'Fire reported. Dispatching fire unit to your location. Stay away from the area and keep low if there is smoke.';
+    if (/gas leak|gas smell|smell gas/.test(m)) return 'Gas hazard reported. Leave the building immediately. Do not use electrical switches. Fire unit dispatched.';
+    if (/flood|water rising|water level/.test(m)) return 'Flood alert. Move to higher ground immediately. Rescue unit notified.';
+    if (/earthquake|shaking|building collapsi/.test(m)) return 'Seismic event noted. Get under sturdy cover. Do not use elevators. Rescue teams alerted.';
+    if (/explosion|bomb|blast|detonat/.test(m)) return 'Explosion reported. Stay away from the area. Police and fire units dispatched. Do not re-enter the building.';
+    if (/power.?line|electric|electrocut|wire.?down/.test(m)) return 'Electrical hazard reported. Stay at least 10 meters away. Do not touch anything. Emergency crew dispatched.';
+
+    if (/police|cop|officer|crime|robbery|robbed|robbing|stole|stolen|theft|broke in|break.?in|burglar|intruder|trespass/.test(m)) return 'Police unit notified. Stay in a safe location. Do not confront anyone. Lock doors if possible.';
+    if (/shoot|gun|weapon|armed|knife|stab/.test(m)) return 'Armed threat reported. Police tactical unit dispatched. Hide, stay silent, do not approach. Lock and barricade if possible.';
+    if ((/fight|assault|attack|beat|violen/.test(m)) && !(/dog|animal|cat|snake|bear/.test(m))) return 'Assault reported. Police dispatched. Move to a safe distance. Do not intervene.';
+    if (/follow|stalk|threaten|harass/.test(m)) return 'Threat reported. Go to a public, well-lit area. Police unit dispatched to your location.';
+    if (/missing|lost.*child|lost.*person|can.?t find/.test(m)) return 'Missing person report noted. What is their description? Police search unit notified.';
+    if (/kidnap|abduct|taken/.test(m)) return 'Abduction reported. Police priority unit dispatched. Do you have a description of the vehicle or suspect?';
+    if (/domestic|partner|spouse|husband|wife.*hit|abus/.test(m)) return 'Domestic incident reported. Police and social services dispatched. Are you in a safe room?';
+    if (/suspicious|strange person|prowler|lurking/.test(m)) return 'Noted. Police patrol dispatched to investigate. Stay inside and keep doors locked.';
+    if (/vandal|graffiti|damage.*property|smash/.test(m)) return 'Property damage reported. Police unit will respond. Are you in danger?';
+
+    if (/ambulance|hospital|doctor|medic/.test(m)) return 'Medical unit dispatched to your location. Stay calm. Is the person conscious?';
+    if (/heart|chest pain|cardiac/.test(m)) return 'Possible cardiac event. Medical unit dispatched urgently. Have the person sit or lie down. Do not let them exert themselves.';
+    if (/breath|chok|can.?t breathe|suffocati|asthma/.test(m)) return 'Breathing emergency. Medical unit dispatched. If choking, attempt back blows. If asthma, help them find their inhaler.';
+    if (/bleed|blood|wound|cut|gash/.test(m)) return 'Apply firm pressure to the wound with a clean cloth. Medical unit dispatched. Do not remove any objects from the wound.';
+    if (/broke|fracture|bone|sprain/.test(m)) return 'Do not move the injured limb. Keep the person still and comfortable. Medical unit dispatched.';
+    if (/burn|scald/.test(m)) return 'Cool the burn under running water for at least 10 minutes. Do not apply ice. Medical unit dispatched.';
+    if (/poison|overdose|swallow|ingest|toxic/.test(m)) return 'Poisoning reported. Do not induce vomiting. Medical unit dispatched urgently. What substance was involved?';
+    if (/seiz|convuls|epilep|fitting/.test(m)) return 'Seizure reported. Clear the area around them. Do not restrain or put anything in their mouth. Medical unit dispatched.';
+    if (/unconscious|unresponsive|not waking|passed out|faint|collaps/.test(m)) return 'Check if they are breathing. If not breathing, begin chest compressions. Medical unit dispatched urgently.';
+    if (/allergic|anaphyla|swelling|epipen/.test(m)) return 'Allergic reaction reported. If they have an EpiPen, help them use it. Medical unit dispatched urgently.';
+    if (/stroke|face droop|slur|numb|one side/.test(m)) return 'Possible stroke. Note the time symptoms started. Do not give food or water. Medical unit dispatched urgently.';
+    if (/pregnant|labor|baby|deliver|contraction|water broke/.test(m)) return 'Medical unit dispatched. Keep the person comfortable and lying down. How far apart are contractions?';
+    if (/drown|water|swim|river|pool|lake/.test(m)) return 'Water rescue unit dispatched. Do not enter the water unless trained. Throw a flotation device if available.';
+    if ((/fall|fell|height|ladder|roof|stairs/.test(m)) && !(/tree|debris|road|branch/.test(m))) return 'Do not move the person. Check for breathing. Medical unit dispatched.';
+    if (/hurt|injured|pain|sick|unwell/.test(m) || /\bill\b/.test(m)) return 'Medical unit dispatched. Stay calm and keep the person comfortable. Help is on the way.';
+    if (/diabetic|sugar|insulin|hypogly/.test(m)) return 'If conscious, give them sugar or juice. If unconscious, place in recovery position. Medical unit dispatched.';
+    if (/mental|suicid|self.?harm|crisis|panic/.test(m)) return 'Crisis support dispatched. Stay with the person. Talk to them calmly. Remove any dangerous items nearby.';
+
+    if (/accident|crash|collision|hit.*car|car.*hit|ran over|run over/.test(m)) return 'Accident reported. Do not move injured persons. Emergency units dispatched. Are there injuries?';
+    if (/trapped|stuck|locked|can.?t get out|elevator/.test(m)) return 'Rescue unit dispatched. Stay calm and conserve air. Do not try to force your way out. We are coming.';
+    if (/animal|dog.*attack|dog.*bit|snake|bite/.test(m)) return 'Animal incident reported. Move away from the animal. Do not provoke it. Medical and animal control dispatched.';
+    if (/child|baby|infant|kid/.test(m) && /alone|danger|cry|hurt|lost/.test(m)) return 'Child welfare unit dispatched. Stay with the child if safe. Keep them calm. Help is on the way.';
+    if (/smell|fumes|carbon monoxide|chemical/.test(m)) return 'Hazardous atmosphere reported. Leave the area immediately. Get to fresh air. Hazmat unit dispatched.';
+    if (/tree|debris|road.?block|obstruct/.test(m)) return 'Obstruction reported. Avoid the area. Cleanup crew dispatched. Are there any injuries?';
+
+    if (/yes/.test(m) && words < 5) return 'Understood. Help is on the way. Stay on the line.';
+    if (/no/.test(m) && words < 5) return 'Ok. Stay where you are. A unit will arrive shortly.';
+    if (/^(one|two|three|1|2|3|[0-9])/.test(m) && words < 4) return 'Noted. Can you give more detail about the situation?';
+    if (/thank|thanks|appreciate/.test(m)) return 'Stay safe. Units are en route.';
+    if (/where|location|address|gps/.test(m)) return 'Your location is registered as District 7, GPS 48.2082, 16.3738. Is this correct?';
+    if (/how long|when|eta|time|how far|minutes/.test(m)) return 'Estimated response time: 8-12 minutes depending on traffic.';
+    if (/who|what unit|what team/.test(m)) return 'The nearest available unit has been dispatched. They will identify themselves on arrival.';
+    if (/stay|wait|what.*do|should i|do i/.test(m)) return 'Stay where you are unless you are in immediate danger. Keep your phone accessible. Help is coming.';
+    if (/safe|secure|danger|scared|afraid/.test(m)) return 'Your safety is the priority. If you feel unsafe, move to a public area or lock yourself in a room. Units are en route.';
+    if (/ok|okay|alright|got it|understood|copy/.test(m)) return 'Is there anything else I can help with?';
+    if (/bye|cancel|end|hang up|close|done|nothing/.test(m)) return 'Call ending. Stay safe. Emergency units remain en route.';
+    if (/repeat|again|what|huh|sorry/.test(m)) return 'I am here to help. What is your emergency? You can say things like "fire", "someone is hurt", or "I need police."';
+
+    if (words > 10) return 'I am having trouble with that. Can you tell me the main problem in just a few words?';
+    return 'I am not sure I understand. Try telling me: is it a fire, medical, or police emergency?';
 }
 
 function sendEmgMsg() {
