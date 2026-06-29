@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slavakian Union - National Government Portal</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <div class="login-emblem">
+                <div class="emblem-shield">SU</div>
+            </div>
+            <h1>Slavakian Union</h1>
+            <h2>National Government Portal</h2>
+            <p class="login-subtitle">Secure Access to All Government Services</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Citizen ID / Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn-login">Access Portal</button>
+            </form>
+            <p class="login-footer">Ministry of Digital Affairs &bull; Slavakian Bureau of Immigration Services</p>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="app hidden">
+        <!-- SIDEBAR -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-emblem">SU</div>
+                <span class="sidebar-title">Slavakian Union</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon">&#9776;</span> Dashboard
+                </li>
+                <li class="nav-item" data-section="immigration">
+                    <span class="nav-icon">&#9992;</span> Immigration Hub
+                </li>
+                <li class="nav-item" data-section="residency">
+                    <span class="nav-icon">&#8962;</span> Address & Residency
+                </li>
+                <li class="nav-item" data-section="documents">
+                    <span class="nav-icon">&#128196;</span> Document Vault
+                </li>
+                <li class="nav-item" data-section="transport">
+                    <span class="nav-icon">&#128663;</span> Transport & Safety
+                </li>
+                <li class="nav-item" data-section="suig">
+                    <span class="nav-icon">&#128176;</span> SUIG Grant
+                </li>
+                <li class="nav-item" data-section="healthcare">
+                    <span class="nav-icon">&#9829;</span> Healthcare
+                </li>
+                <li class="nav-item" data-section="jobs">
+                    <span class="nav-icon">&#128188;</span> Jobs & Education
+                </li>
+                <li class="nav-item" data-section="banking">
+                    <span class="nav-icon">&#127974;</span> Banking
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-logout">Logout</button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- TOP BAR -->
+            <header class="topbar">
+                <button id="menu-toggle" class="menu-toggle">&#9776;</button>
+                <div class="topbar-info">
+                    <span id="current-section-title">Dashboard</span>
+                </div>
+                <div class="topbar-user">
+                    <span class="notification-bell" id="notification-bell">&#128276; <span class="notif-count">3</span></span>
+                    <span id="user-display-name">Welcome, Citizen</span>
+                </div>
+            </header>
+
+            <!-- NOTIFICATION PANEL -->
+            <div id="notification-panel" class="notification-panel hidden">
+                <h3>Alerts & Notifications</h3>
+                <div class="notif-item urgent">
+                    <span class="notif-dot"></span>
+                    <p>Golden Ticket expires in 3 days - Renew immediately</p>
+                </div>
+                <div class="notif-item warning">
+                    <span class="notif-dot"></span>
+                    <p>SUIG Grant deadline approaching - 14 days remaining</p>
+                </div>
+                <div class="notif-item info">
+                    <span class="notif-dot"></span>
+                    <p>New message from SBIS regarding your appointment</p>
+                </div>
+            </div>
+
+            <!-- DASHBOARD -->
+            <section id="section-dashboard" class="content-section active">
+                <h2>Home Dashboard</h2>
+                <div class="dashboard-grid">
+                    <div class="dash-card">
+                        <h3>Residency Status</h3>
+                        <div class="status-badge status-active">ACTIVE RESIDENT</div>
+                        <p>Registration #: SU-2024-889712</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>Golden Ticket</h3>
+                        <div class="qr-code" id="qr-code">
+                            <div class="qr-placeholder">
+                                <div class="qr-grid"></div>
+                            </div>
+                        </div>
+                        <p class="qr-label">Scan for verification</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>Immigration Progress</h3>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 72%"></div>
+                        </div>
+                        <p>72% Complete - Step 5 of 7</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>Upcoming Appointments</h3>
+                        <div class="appointment-item">
+                            <span class="appt-date">Jul 3</span>
+                            <span class="appt-desc">SBIS Interview - Office 4B</span>
+                        </div>
+                        <div class="appointment-item">
+                            <span class="appt-date">Jul 10</span>
+                            <span class="appt-desc">Healthcare Registration</span>
+                        </div>
+                    </div>
+                    <div class="dash-card">
+                        <h3>Messages from SBIS</h3>
+                        <div class="message-preview">
+                            <p class="msg-sender">Officer Drakovitch</p>
+                            <p class="msg-text">Your background check has been approved. Please proceed to...</p>
+                        </div>
+                        <a href="#" class="card-link" onclick="navigateTo('immigration')">View All Messages</a>
+                    </div>
+                    <div class="dash-card">
+                        <h3>Tax ID Status</h3>
+                        <div class="status-badge status-active">ISSUED</div>
+                        <p>Tax ID: SU-TX-44821-K</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>Healthcare Enrollment</h3>
+                        <div class="status-badge status-pending">ENROLLED</div>
+                        <p>Universal Care Plan - Tier 2</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>Employment Eligibility</h3>
+                        <div class="status-badge status-active">ELIGIBLE</div>
+                        <p>Work Permit: Valid until Dec 2025</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>Bank Linking</h3>
+                        <div class="status-badge status-active">LINKED</div>
+                        <p>Slavik National Security Bank<br>Account: ****4821</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>SUIG Grant Balance</h3>
+                        <p class="grant-balance">&#8364; 12,450.00</p>
+                        <p class="grant-deadline">Deadline: 46 days remaining</p>
+                        <div class="spending-status on-track">ON TRACK</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IMMIGRATION HUB -->
+            <section id="section-immigration" class="content-section">
+                <h2>Immigration Hub</h2>
+                <div class="immigration-layout">
+                    <div class="imm-checklist">
+                        <h3>Path to Residency</h3>
+                        <div class="checklist">
+                            <div class="check-item completed">
+                                <span class="check-box">&#10003;</span>
+                                <span>Golden Ticket Issued</span>
+                            </div>
+                            <div class="check-item completed">
+                                <span class="check-box">&#10003;</span>
+                                <span>Passport Scan Uploaded</span>
+                            </div>
+                            <div class="check-item completed">
+                                <span class="check-box">&#10003;</span>
+                                <span>Background Check Passed</span>
+                            </div>
+                            <div class="check-item completed">
+                                <span class="check-box">&#10003;</span>
+                                <span>IDP Registered</span>
+                            </div>
+                            <div class="check-item active">
+                                <span class="check-box">&#9679;</span>
+                                <span>Property Acquisition</span>
+                            </div>
+                            <div class="check-item pending">
+                                <span class="check-box">&#9675;</span>
+                                <span>Residency Certificate Issued</span>
+                            </div>
+                            <div class="check-item pending">
+                                <span class="check-box">&#9675;</span>
+                                <span>Full Citizenship Review</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="imm-documents">
+                        <h3>Digital Documents</h3>
+                        <div class="doc-grid">
+                            <div class="doc-item" onclick="viewDocument('golden-ticket')">
+                                <div class="doc-icon">&#127903;</div>
+                                <span>Golden Ticket</span>
+                                <span class="doc-status uploaded">Uploaded</span>
+                            </div>
+                            <div class="doc-item" onclick="viewDocument('passport')">
+                                <div class="doc-icon">&#128210;</div>
+                                <span>Passport Scan</span>
+                                <span class="doc-status uploaded">Uploaded</span>
+                            </div>
+                            <div class="doc-item" onclick="viewDocument('residency-cert')">
+                                <div class="doc-icon">&#128220;</div>
+                                <span>Residency Certificate</span>
+                                <span class="doc-status pending-doc">Pending</span>
+                            </div>
+                            <div class="doc-item" onclick="viewDocument('property-deed')">
+                                <div class="doc-icon">&#127968;</div>
+                                <span>Property Deed</span>
+                                <span class="doc-status pending-doc">Pending</span>
+                            </div>
+                            <div class="doc-item" onclick="viewDocument('idp')">
+                                <div class="doc-icon">&#128179;</div>
+                                <span>IDP</span>
+                                <span class="doc-status uploaded">Uploaded</span>
+                            </div>
+                            <div class="doc-item" onclick="viewDocument('background')">
+                                <div class="doc-icon">&#128270;</div>
+                                <span>Background Check</span>
+                                <span class="doc-status uploaded">Approved</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="imm-appointments">
+                        <h3>Book Appointment with SBIS</h3>
+                        <div class="booking-form">
+                            <select id="appt-type">
+                                <option>Select Appointment Type</option>
+                                <option>Immigration Interview</option>
+                                <option>Document Review</option>
+                                <option>Residency Consultation</option>
+                                <option>Visa Renewal</option>
+                                <option>Video Call with Officer</option>
+                            </select>
+                            <input type="date" id="appt-date">
+                            <select id="appt-time">
+                                <option>Select Time</option>
+                                <option>09:00</option>
+                                <option>10:00</option>
+                                <option>11:00</option>
+                                <option>13:00</option>
+                                <option>14:00</option>
+                                <option>15:00</option>
+                            </select>
+                            <button class="btn-primary" onclick="bookAppointment()">Book Appointment</button>
+                        </div>
+                    </div>
+
+                    <div class="imm-chat">
+                        <h3>Chat with SBIS</h3>
+                        <div class="chat-window" id="chat-window">
+                            <div class="chat-message bot">
+                                <span class="chat-sender">SBIS Agent</span>
+                                <p>Welcome to the Slavakian Bureau of Immigration Services. How can I assist you today?</p>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Type your message...">
+                            <button class="btn-send" onclick="sendChat()">Send</button>
+                        </div>
+                    </div>
+
+                    <div class="imm-reminders">
+                        <h3>Automatic Reminders</h3>
+                        <div class="reminder-list">
+                            <div class="reminder-item urgent">
+                                <span class="reminder-icon">&#9888;</span>
+                                <div>
+                                    <p class="reminder-title">Visa Renewal Due</p>
+                                    <p class="reminder-desc">Your Golden Ticket must be renewed within 3 days</p>
+                                </div>
+                            </div>
+                            <div class="reminder-item warning">
+                                <span class="reminder-icon">&#128197;</span>
+                                <div>
+                                    <p class="reminder-title">Property Deadline</p>
+                                    <p class="reminder-desc">Acquire qualifying property within 30 days</p>
+                                </div>
+                            </div>
+                            <div class="reminder-item info">
+                                <span class="reminder-icon">&#128196;</span>
+                                <div>
+                                    <p class="reminder-title">Document Upload</p>
+                                    <p class="reminder-desc">Upload property deed once acquisition complete</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADDRESS & RESIDENCY -->
+            <section id="section-residency" class="content-section">
+                <h2>Address & Residency Verification</h2>
+                <div class="residency-layout">
+                    <div class="res-card property-search">
+                        <h3>Property Search</h3>
+                        <div class="search-bar">
+                            <input type="text" id="property-search" placeholder="Search by district, price, or zone...">
+                            <button class="btn-primary" onclick="searchProperties()">Search</button>
+                        </div>
+                        <div id="property-results" class="property-results">
+                            <div class="property-item qualified">
+                                <div class="prop-image">&#127968;</div>
+                                <div class="prop-details">
+                                    <h4>42 Volkov Street, District 7</h4>
+                                    <p>3 Bed | 2 Bath | 120m&sup2;</p>
+                                    <p class="prop-price">&#8364; 185,000</p>
+                                    <span class="prop-badge qualified-badge">QUALIFIED ZONE</span>
+                                </div>
+                                <button class="btn-small" onclick="selectProperty(this)">Select</button>
+                            </div>
+                            <div class="property-item qualified">
+                                <div class="prop-image">&#127968;</div>
+                                <div class="prop-details">
+                                    <h4>18 Petrov Avenue, District 3</h4>
+                                    <p>2 Bed | 1 Bath | 85m&sup2;</p>
+                                    <p class="prop-price">&#8364; 142,000</p>
+                                    <span class="prop-badge qualified-badge">QUALIFIED ZONE</span>
+                                </div>
+                                <button class="btn-small" onclick="selectProperty(this)">Select</button>
+                            </div>
+                            <div class="property-item not-qualified">
+                                <div class="prop-image">&#127968;</div>
+                                <div class="prop-details">
+                                    <h4>7 Krasny Lane, District 12</h4>
+                                    <p>1 Bed | 1 Bath | 55m&sup2;</p>
+                                    <p class="prop-price">&#8364; 89,000</p>
+                                    <span class="prop-badge not-qualified-badge">NOT QUALIFIED</span>
+                                </div>
+                                <button class="btn-small" disabled>Ineligible</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="res-card">
+                        <h3>Residency Linking Status</h3>
+                        <div class="linking-steps">
+                            <div class="link-step completed">
+                                <span class="step-num">1</span>
+                                <span>Property Identified</span>
+                            </div>
+                            <div class="link-step active">
+                                <span class="step-num">2</span>
+                                <span>Purchase & Deed Upload</span>
+                            </div>
+                            <div class="link-step pending">
+                                <span class="step-num">3</span>
+                                <span>SBIS Notification Sent</span>
+                            </div>
+                            <div class="link-step pending">
+                                <span class="step-num">4</span>
+                                <span>Golden Ticket Linked</span>
+                            </div>
+                            <div class="link-step pending">
+                                <span class="step-num">5</span>
+                                <span>Residency Certificate Issued</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="res-card">
+                        <h3>Upload Property Deed</h3>
+                        <div class="upload-zone" id="deed-upload" onclick="simulateUpload('deed')">
+                            <div class="upload-icon">&#128194;</div>
+                            <p>Click to upload or drag & drop</p>
+                            <p class="upload-hint">PDF, JPG, PNG (max 10MB)</p>
+                        </div>
+                        <div id="deed-upload-status" class="upload-status hidden">
+                            <span class="upload-success">&#10003; Deed uploaded successfully</span>
+                        </div>
+                    </div>
+
+                    <div class="res-card">
+                        <h3>Approved Property Zones</h3>
+                        <div class="zone-map">
+                            <div class="map-placeholder">
+                                <div class="map-zone zone-1">D3</div>
+                                <div class="map-zone zone-2">D7</div>
+                                <div class="map-zone zone-3">D5</div>
+                                <div class="map-zone zone-4">D9</div>
+                                <div class="map-legend">
+                                    <span class="legend-item"><span class="legend-dot green"></span> Approved</span>
+                                    <span class="legend-item"><span class="legend-dot red"></span> Restricted</span>
+                                    <span class="legend-item"><span class="legend-dot yellow"></span> Limited</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="alert('Opening GPS navigation to nearest approved zone: District 3 - 4.2km away')">Get Directions to Nearest Zone</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DOCUMENT VAULT -->
+            <section id="section-documents" class="content-section">
+                <h2>Document Vault</h2>
+                <p class="section-subtitle">Government-protected secure storage for all personal documents</p>
+                <div class="vault-grid">
+                    <div class="vault-item" onclick="openVaultDoc('passport')">
+                        <div class="vault-icon">&#128210;</div>
+                        <h4>Passport</h4>
+                        <span class="vault-status valid">Valid</span>
+                        <p class="vault-exp">Expires: Mar 2029</p>
+                    </div>
+                    <div class="vault-item" onclick="openVaultDoc('golden-ticket')">
+                        <div class="vault-icon">&#127903;</div>
+                        <h4>Visa / Golden Ticket</h4>
+                        <span class="vault-status expiring">Expiring Soon</span>
+                        <p class="vault-exp">Expires: Jul 3, 2024</p>
+                    </div>
+                    <div class="vault-item" onclick="openVaultDoc('idp')">
+                        <div class="vault-icon">&#128179;</div>
+                        <h4>IDP</h4>
+                        <span class="vault-status valid">Valid</span>
+                        <p class="vault-exp">Expires: Jan 2026</p>
+                    </div>
+                    <div class="vault-item" onclick="openVaultDoc('taxes')">
+                        <div class="vault-icon">&#128200;</div>
+                        <h4>Tax Documents</h4>
+                        <span class="vault-status valid">Filed</span>
+                        <p class="vault-exp">2024 Return Submitted</p>
+                    </div>
+                    <div class="vault-item" onclick="openVaultDoc('healthcare')">
+                        <div class="vault-icon">&#9829;</div>
+                        <h4>Healthcare Card</h4>
+                        <span class="vault-status valid">Active</span>
+                        <p class="vault-exp">Universal Care - Tier 2</p>
+                    </div>
+                    <div class="vault-item" onclick="openVaultDoc('employment')">
+                        <div class="vault-icon">&#128188;</div>
+                        <h4>Employment Papers</h4>
+                        <span class="vault-status valid">Active</span>
+                        <p class="vault-exp">Work Permit Valid</p>
+                    </div>
+                    <div class="vault-item" onclick="openVaultDoc('suig')">
+                        <div class="vault-icon">&#128176;</div>
+                        <h4>SUIG Grant Details</h4>
+                        <span class="vault-status valid">Active</span>
+                        <p class="vault-exp">Grant #SU-G-20248</p>
+                    </div>
+                    <div class="vault-item" onclick="openVaultDoc('bank')">
+                        <div class="vault-icon">&#127974;</div>
+                        <h4>Bank Verification</h4>
+                        <span class="vault-status valid">Verified</span>
+                        <p class="vault-exp">SNSB Account Linked</p>
+                    </div>
+                    <div class="vault-item" onclick="openVaultDoc('utilities')">
+                        <div class="vault-icon">&#9889;</div>
+                        <h4>Utility Bills</h4>
+                        <span class="vault-status valid">Current</span>
+                        <p class="vault-exp">Last paid: Jun 2024</p>
+                    </div>
+                </div>
+                <div class="vault-upload-section">
+                    <h3>Upload New Document</h3>
+                    <div class="vault-upload-form">
+                        <select id="vault-doc-type">
+                            <option>Select Document Type</option>
+                            <option>Passport</option>
+                            <option>Visa / Golden Ticket</option>
+                            <option>IDP</option>
+                            <option>Tax Document</option>
+                            <option>Healthcare Card</option>
+                            <option>Employment Paper</option>
+                            <option>Bank Statement</option>
+                            <option>Utility Bill</option>
+                            <option>Other</option>
+                        </select>
+                        <div class="upload-zone" onclick="simulateUpload('vault')">
+                            <div class="upload-icon">&#128194;</div>
+                            <p>Click to upload</p>
+                        </div>
+                        <div id="vault-upload-status" class="upload-status hidden">
+                            <span class="upload-success">&#10003; Document uploaded to vault</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TRANSPORT & SAFETY -->
+            <section id="section-transport" class="content-section">
+                <h2>Transport & Safety</h2>
+                <div class="transport-grid">
+                    <div class="transport-card">
+                        <h3>&#128678; Traffic Laws</h3>
+                        <ul class="law-list">
+                            <li>Speed limit in residential zones: <strong>40 km/h</strong></li>
+                            <li>Speed limit on highways: <strong>120 km/h</strong></li>
+                            <li>Right-hand traffic throughout Slavakian Union</li>
+                            <li>Headlights required 24/7 October-March</li>
+                            <li>Zero tolerance for mobile phone use while driving</li>
+                        </ul>
+                    </div>
+                    <div class="transport-card">
+                        <h3>&#128248; Speed & Camera Alerts</h3>
+                        <div class="alert-active">
+                            <div class="alert-pulse"></div>
+                            <span>ACTIVE MONITORING</span>
+                        </div>
+                        <div class="camera-list">
+                            <div class="camera-item">
+                                <span>Volkov St & 3rd Ave</span>
+                                <span class="cam-type">Red Light</span>
+                            </div>
+                            <div class="camera-item">
+                                <span>Highway E7 km 42</span>
+                                <span class="cam-type">Speed</span>
+                            </div>
+                            <div class="camera-item">
+                                <span>Central Square</span>
+                                <span class="cam-type">Red Light</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="transport-card">
+                        <h3>&#128506; Safety Map</h3>
+                        <div class="safety-map">
+                            <div class="map-area safe">District 3 - Safe</div>
+                            <div class="map-area caution">District 8 - Caution</div>
+                            <div class="map-area danger">District 12 - Avoid at Night</div>
+                            <div class="map-area safe">District 5 - Safe</div>
+                        </div>
+                        <div class="safety-alerts">
+                            <p class="alert-item pickpocket">&#9888; Pickpocket activity reported near Central Market</p>
+                            <p class="alert-item weather">&#127786; High winds expected Thursday - Secure property</p>
+                        </div>
+                    </div>
+                    <div class="transport-card">
+                        <h3>&#127777; Weather & Hazards</h3>
+                        <div class="weather-current">
+                            <span class="weather-temp">18&deg;C</span>
+                            <span class="weather-desc">Partly Cloudy</span>
+                        </div>
+                        <div class="hazard-list">
+                            <div class="hazard-item warning">
+                                <span>&#127786;</span> Wind Advisory - Tomorrow
+                            </div>
+                            <div class="hazard-item safe">
+                                <span>&#128293;</span> No wildfire risk
+                            </div>
+                            <div class="hazard-item safe">
+                                <span>&#127754;</span> No flood warnings
+                            </div>
+                        </div>
+                    </div>
+                    <div class="transport-card emergency-card">
+                        <h3>&#128680; Emergency</h3>
+                        <button class="btn-emergency" onclick="triggerEmergency()">
+                            EMERGENCY CALL
+                        </button>
+                        <div class="emergency-numbers">
+                            <p><strong>Police:</strong> 112</p>
+                            <p><strong>Fire:</strong> 113</p>
+                            <p><strong>Ambulance:</strong> 114</p>
+                            <p><strong>SBIS Hotline:</strong> 0800-SBIS</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SUIG GRANT -->
+            <section id="section-suig" class="content-section">
+                <h2>SUIG Grant Management</h2>
+                <div class="suig-layout">
+                    <div class="suig-card balance-card">
+                        <h3>Grant Balance</h3>
+                        <p class="big-balance">&#8364; 12,450.00</p>
+                        <p class="original-grant">Original: &#8364; 25,000.00</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar spent" style="width: 50.2%"></div>
+                        </div>
+                        <p>50.2% spent</p>
+                    </div>
+
+                    <div class="suig-card countdown-card">
+                        <h3>Grant Deadline</h3>
+                        <div class="countdown" id="countdown">
+                            <div class="countdown-unit">
+                                <span class="countdown-num" id="days-left">46</span>
+                                <span class="countdown-label">Days</span>
+                            </div>
+                            <div class="countdown-unit">
+                                <span class="countdown-num">14</span>
+                                <span class="countdown-label">Hours</span>
+                            </div>
+                            <div class="countdown-unit">
+                                <span class="countdown-num">32</span>
+                                <span class="countdown-label">Minutes</span>
+                            </div>
+                        </div>
+                        <p class="countdown-warning">60-day utilization window</p>
+                    </div>
+
+                    <div class="suig-card status-card">
+                        <h3>Spending Status</h3>
+                        <div class="spending-indicator" id="spending-indicator">
+                            <div class="indicator-circle on-track">
+                                <span>&#10003;</span>
+                            </div>
+                            <p class="indicator-text on-track-text">ON TRACK</p>
+                            <p class="indicator-detail">Your spending aligns with your timeline</p>
+                        </div>
+                        <button class="btn-small" onclick="toggleSpendingStatus()">Simulate Status Change</button>
+                    </div>
+
+                    <div class="suig-card">
+                        <h3>Spending Categories</h3>
+                        <div class="category-list">
+                            <div class="category-item">
+                                <span class="cat-name">Housing/Rent</span>
+                                <div class="cat-bar-container">
+                                    <div class="cat-bar" style="width: 45%"></div>
+                                </div>
+                                <span class="cat-amount">&#8364; 5,625</span>
+                            </div>
+                            <div class="category-item">
+                                <span class="cat-name">Transportation</span>
+                                <div class="cat-bar-container">
+                                    <div class="cat-bar" style="width: 20%"></div>
+                                </div>
+                                <span class="cat-amount">&#8364; 2,500</span>
+                            </div>
+                            <div class="category-item">
+                                <span class="cat-name">Food & Living</span>
+                                <div class="cat-bar-container">
+                                    <div class="cat-bar" style="width: 25%"></div>
+                                </div>
+                                <span class="cat-amount">&#8364; 3,125</span>
+                            </div>
+                            <div class="category-item">
+                                <span class="cat-name">Miscellaneous</span>
+                                <div class="cat-bar-container">
+                                    <div class="cat-bar" style="width: 10%"></div>
+                                </div>
+                                <span class="cat-amount">&#8364; 1,300</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="suig-card">
+                        <h3>Rent Tracker</h3>
+                        <div class="rent-tracker">
+                            <div class="rent-month paid">
+                                <span>Jan</span><span class="rent-status">&#10003;</span>
+                            </div>
+                            <div class="rent-month paid">
+                                <span>Feb</span><span class="rent-status">&#10003;</span>
+                            </div>
+                            <div class="rent-month paid">
+                                <span>Mar</span><span class="rent-status">&#10003;</span>
+                            </div>
+                            <div class="rent-month paid">
+                                <span>Apr</span><span class="rent-status">&#10003;</span>
+                            </div>
+                            <div class="rent-month paid">
+                                <span>May</span><span class="rent-status">&#10003;</span>
+                            </div>
+                            <div class="rent-month current">
+                                <span>Jun</span><span class="rent-status">&#9679;</span>
+                            </div>
+                        </div>
+                        <p>Monthly rent: &#8364; 950 | Next due: Jul 1</p>
+                    </div>
+
+                    <div class="suig-card">
+                        <h3>Loan Calculator</h3>
+                        <div class="loan-calc">
+                            <div class="calc-row">
+                                <label>Loan Amount (&#8364;)</label>
+                                <input type="number" id="loan-amount" value="10000">
+                            </div>
+                            <div class="calc-row">
+                                <label>Interest Rate (%)</label>
+                                <input type="number" id="loan-rate" value="3.5" step="0.1">
+                            </div>
+                            <div class="calc-row">
+                                <label>Term (months)</label>
+                                <input type="number" id="loan-term" value="24">
+                            </div>
+                            <button class="btn-primary" onclick="calculateLoan()">Calculate</button>
+                            <div id="loan-result" class="loan-result hidden">
+                                <p>Monthly Payment: <strong id="monthly-payment"></strong></p>
+                                <p>Total Interest: <strong id="total-interest"></strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="suig-card">
+                        <h3>Upload Expense Receipt</h3>
+                        <div class="upload-zone" onclick="simulateUpload('receipt')">
+                            <div class="upload-icon">&#128433;</div>
+                            <p>Upload receipt</p>
+                        </div>
+                        <div id="receipt-upload-status" class="upload-status hidden">
+                            <span class="upload-success">&#10003; Receipt uploaded</span>
+                        </div>
+                        <div class="recent-receipts">
+                            <h4>Recent Receipts</h4>
+                            <div class="receipt-item">Jun 25 - Grocery - &#8364; 47.80</div>
+                            <div class="receipt-item">Jun 23 - Transport - &#8364; 12.00</div>
+                            <div class="receipt-item">Jun 20 - Utilities - &#8364; 85.00</div>
+                        </div>
+                    </div>
+
+                    <div class="suig-card warning-card">
+                        <h3>&#9888; Grant Alerts</h3>
+                        <div class="grant-alerts">
+                            <div class="grant-alert warning">
+                                <p><strong>Grant expires in 46 days.</strong></p>
+                                <p>Ensure all funds are allocated before deadline.</p>
+                            </div>
+                            <div class="grant-alert info">
+                                <p><strong>Residency progress: 72%</strong></p>
+                                <p>Maintain spending alignment with residency milestones.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HEALTHCARE -->
+            <section id="section-healthcare" class="content-section">
+                <h2>Healthcare & Social Services</h2>
+                <div class="healthcare-grid">
+                    <div class="health-card">
+                        <h3>Universal Healthcare ID</h3>
+                        <div class="health-id-card">
+                            <div class="hid-header">SLAVAKIAN UNION HEALTH SERVICE</div>
+                            <div class="hid-body">
+                                <p class="hid-name" id="health-name">CITIZEN</p>
+                                <p class="hid-number">HC-2024-448219</p>
+                                <p class="hid-plan">Universal Care Plan - Tier 2</p>
+                                <p class="hid-valid">Valid: Jan 2024 - Dec 2025</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>Book Appointment</h3>
+                        <div class="health-booking">
+                            <select id="health-type">
+                                <option>Select Service</option>
+                                <option>General Checkup</option>
+                                <option>Specialist Referral</option>
+                                <option>Vaccination</option>
+                                <option>Dental</option>
+                                <option>Mental Health</option>
+                                <option>Emergency Follow-up</option>
+                            </select>
+                            <select id="health-facility">
+                                <option>Select Facility</option>
+                                <option>Central District Hospital</option>
+                                <option>Volkov Street Clinic</option>
+                                <option>University Medical Center</option>
+                                <option>District 7 Health Post</option>
+                            </select>
+                            <input type="date" id="health-date">
+                            <button class="btn-primary" onclick="bookHealthAppt()">Book</button>
+                        </div>
+                        <div id="health-appt-confirm" class="hidden confirm-msg">
+                            &#10003; Appointment booked successfully
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>Vaccination Records</h3>
+                        <div class="vaccine-list">
+                            <div class="vaccine-item">
+                                <span class="vax-name">COVID-19 (Booster 3)</span>
+                                <span class="vax-date">Mar 2024</span>
+                                <span class="vax-status">&#10003;</span>
+                            </div>
+                            <div class="vaccine-item">
+                                <span class="vax-name">Influenza</span>
+                                <span class="vax-date">Oct 2023</span>
+                                <span class="vax-status">&#10003;</span>
+                            </div>
+                            <div class="vaccine-item">
+                                <span class="vax-name">Tetanus</span>
+                                <span class="vax-date">Jun 2022</span>
+                                <span class="vax-status">&#10003;</span>
+                            </div>
+                            <div class="vaccine-item due">
+                                <span class="vax-name">Hepatitis B (Dose 2)</span>
+                                <span class="vax-date">Due: Aug 2024</span>
+                                <span class="vax-status">&#9675;</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>Prescriptions</h3>
+                        <div class="prescription-list">
+                            <div class="rx-item">
+                                <span class="rx-name">Metformin 500mg</span>
+                                <span class="rx-refill">Refill: Jul 5</span>
+                            </div>
+                            <div class="rx-item">
+                                <span class="rx-name">Vitamin D3</span>
+                                <span class="rx-refill">Refill: Jul 20</span>
+                            </div>
+                        </div>
+                        <button class="btn-small" onclick="alert('Refill request sent to pharmacy')">Request Refill</button>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>Nearby Facilities</h3>
+                        <div class="facility-list">
+                            <div class="facility-item">
+                                <span class="fac-name">Central District Hospital</span>
+                                <span class="fac-dist">1.2 km</span>
+                            </div>
+                            <div class="facility-item">
+                                <span class="fac-name">Volkov Street Clinic</span>
+                                <span class="fac-dist">2.8 km</span>
+                            </div>
+                            <div class="facility-item">
+                                <span class="fac-name">Night Pharmacy</span>
+                                <span class="fac-dist">0.5 km</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>Emergency Numbers</h3>
+                        <div class="emergency-numbers">
+                            <p><strong>Ambulance:</strong> 114</p>
+                            <p><strong>Poison Control:</strong> 115</p>
+                            <p><strong>Mental Health Crisis:</strong> 116</p>
+                            <p><strong>Health Hotline:</strong> 0800-HEALTH</p>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>Insurance Status</h3>
+                        <div class="insurance-info">
+                            <div class="status-badge status-active">ACTIVE</div>
+                            <p><strong>Plan:</strong> Universal Care Tier 2</p>
+                            <p><strong>Coverage:</strong> Full medical, dental, vision</p>
+                            <p><strong>Copay:</strong> &#8364; 5 per visit</p>
+                            <p><strong>Renewal:</strong> Automatic - Dec 2025</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- JOBS & EDUCATION -->
+            <section id="section-jobs" class="content-section">
+                <h2>Jobs & Education</h2>
+                <div class="jobs-grid">
+                    <div class="jobs-card">
+                        <h3>Employment Status</h3>
+                        <div class="employment-info">
+                            <div class="status-badge status-active">WORK ELIGIBLE</div>
+                            <p><strong>Permit Type:</strong> Full Employment</p>
+                            <p><strong>Valid Until:</strong> December 2025</p>
+                            <p><strong>Restrictions:</strong> None</p>
+                        </div>
+                    </div>
+
+                    <div class="jobs-card">
+                        <h3>&#127894; Military Recruitment</h3>
+                        <div class="military-info">
+                            <div class="eligibility-check">
+                                <p>Eligibility Status:</p>
+                                <div class="status-badge status-active">ELIGIBLE</div>
+                            </div>
+                            <div class="military-branches">
+                                <div class="branch-item" onclick="applyMilitary('army')">
+                                    <span>&#9876;</span> Slavakian Army
+                                </div>
+                                <div class="branch-item" onclick="applyMilitary('navy')">
+                                    <span>&#9875;</span> Slavakian Navy
+                                </div>
+                                <div class="branch-item" onclick="applyMilitary('air')">
+                                    <span>&#9992;</span> Air Defense Force
+                                </div>
+                            </div>
+                            <button class="btn-primary" onclick="alert('Application submitted to Slavakian Defense Ministry')">Begin Application</button>
+                        </div>
+                    </div>
+
+                    <div class="jobs-card">
+                        <h3>&#127891; University Enrollment</h3>
+                        <div class="uni-list">
+                            <div class="uni-item">
+                                <h4>Slavakian National University</h4>
+                                <p>Programs: Engineering, Medicine, Law, Arts</p>
+                                <button class="btn-small" onclick="alert('Enrollment portal opening...')">Apply</button>
+                            </div>
+                            <div class="uni-item">
+                                <h4>Volkov Technical Institute</h4>
+                                <p>Programs: IT, Trades, Agriculture</p>
+                                <button class="btn-small" onclick="alert('Enrollment portal opening...')">Apply</button>
+                            </div>
+                            <div class="uni-item">
+                                <h4>District Academy of Arts</h4>
+                                <p>Programs: Film, Music, Design, Literature</p>
+                                <button class="btn-small" onclick="alert('Enrollment portal opening...')">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="jobs-card">
+                        <h3>Employment Certificates</h3>
+                        <div class="cert-downloads">
+                            <div class="cert-item" onclick="downloadCert('work-permit')">
+                                <span class="cert-icon">&#128196;</span>
+                                <span>Work Permit Certificate</span>
+                                <span class="download-icon">&#11015;</span>
+                            </div>
+                            <div class="cert-item" onclick="downloadCert('tax-clearance')">
+                                <span class="cert-icon">&#128196;</span>
+                                <span>Tax Clearance Letter</span>
+                                <span class="download-icon">&#11015;</span>
+                            </div>
+                            <div class="cert-item" onclick="downloadCert('employment-history')">
+                                <span class="cert-icon">&#128196;</span>
+                                <span>Employment History</span>
+                                <span class="download-icon">&#11015;</span>
+                            </div>
+                            <div class="cert-item" onclick="downloadCert('skill-assessment')">
+                                <span class="cert-icon">&#128196;</span>
+                                <span>Skill Assessment Report</span>
+                                <span class="download-icon">&#11015;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BANKING -->
+            <section id="section-banking" class="content-section">
+                <h2>Banking Integration</h2>
+                <div class="banking-grid">
+                    <div class="bank-card">
+                        <h3>Digital Bank ID</h3>
+                        <div class="bank-id-card">
+                            <div class="bid-header">SLAVIK NATIONAL SECURITY BANK</div>
+                            <div class="bid-body">
+                                <p class="bid-name" id="bank-name">CITIZEN</p>
+                                <p class="bid-number">Account: ****4821</p>
+                                <p class="bid-type">Checking Account - Standard</p>
+                                <p class="bid-since">Member since: January 2024</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <h3>Account Balance</h3>
+                        <div class="balance-display">
+                            <p class="balance-amount">&#8364; 8,247.33</p>
+                            <p class="balance-label">Available Balance</p>
+                        </div>
+                        <div class="balance-breakdown">
+                            <div class="bb-item">
+                                <span>Checking</span>
+                                <span>&#8364; 5,247.33</span>
+                            </div>
+                            <div class="bb-item">
+                                <span>Savings</span>
+                                <span>&#8364; 3,000.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <h3>Transfer SUIG Funds</h3>
+                        <div class="transfer-form">
+                            <div class="transfer-row">
+                                <label>From:</label>
+                                <select>
+                                    <option>SUIG Grant Account</option>
+                                    <option>Checking Account</option>
+                                </select>
+                            </div>
+                            <div class="transfer-row">
+                                <label>To:</label>
+                                <select>
+                                    <option>Checking Account</option>
+                                    <option>Savings Account</option>
+                                    <option>Landlord (Rent)</option>
+                                </select>
+                            </div>
+                            <div class="transfer-row">
+                                <label>Amount (&#8364;):</label>
+                                <input type="number" id="transfer-amount" placeholder="0.00">
+                            </div>
+                            <button class="btn-primary" onclick="processTransfer()">Transfer</button>
+                            <div id="transfer-confirm" class="hidden confirm-msg">
+                                &#10003; Transfer completed successfully
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <h3>Direct Deposit</h3>
+                        <div class="direct-deposit-info">
+                            <div class="status-badge status-active">ACTIVE</div>
+                            <p><strong>Employer:</strong> Slavakian Commerce Ltd.</p>
+                            <p><strong>Frequency:</strong> Bi-weekly</p>
+                            <p><strong>Next Deposit:</strong> Jul 1, 2024</p>
+                            <p><strong>Amount:</strong> &#8364; 2,150.00</p>
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <h3>Pay Utilities</h3>
+                        <div class="utility-payments">
+                            <div class="utility-item">
+                                <span class="util-name">Electricity</span>
+                                <span class="util-amount">&#8364; 45.00</span>
+                                <button class="btn-small" onclick="payUtility(this, 'Electricity')">Pay</button>
+                            </div>
+                            <div class="utility-item">
+                                <span class="util-name">Water</span>
+                                <span class="util-amount">&#8364; 22.00</span>
+                                <button class="btn-small" onclick="payUtility(this, 'Water')">Pay</button>
+                            </div>
+                            <div class="utility-item">
+                                <span class="util-name">Internet</span>
+                                <span class="util-amount">&#8364; 35.00</span>
+                                <button class="btn-small" onclick="payUtility(this, 'Internet')">Pay</button>
+                            </div>
+                            <div class="utility-item">
+                                <span class="util-name">Heating</span>
+                                <span class="util-amount">&#8364; 60.00</span>
+                                <button class="btn-small" onclick="payUtility(this, 'Heating')">Pay</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <h3>Open New Account</h3>
+                        <div class="new-account-options">
+                            <div class="acct-option" onclick="openAccount('savings')">
+                                <span class="acct-icon">&#128179;</span>
+                                <span>Savings Account</span>
+                                <span class="acct-rate">2.5% APY</span>
+                            </div>
+                            <div class="acct-option" onclick="openAccount('investment')">
+                                <span class="acct-icon">&#128200;</span>
+                                <span>Investment Account</span>
+                                <span class="acct-rate">Variable</span>
+                            </div>
+                            <div class="acct-option" onclick="openAccount('business')">
+                                <span class="acct-icon">&#128188;</span>
+                                <span>Business Account</span>
+                                <span class="acct-rate">1.8% APY</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <h3>Transaction History</h3>
+                        <div class="transaction-list">
+                            <div class="transaction-item">
+                                <div class="trans-info">
+                                    <span class="trans-desc">Grocery Store</span>
+                                    <span class="trans-date">Jun 28</span>
+                                </div>
+                                <span class="trans-amount debit">- &#8364; 47.80</span>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="trans-info">
+                                    <span class="trans-desc">SUIG Grant Deposit</span>
+                                    <span class="trans-date">Jun 25</span>
+                                </div>
+                                <span class="trans-amount credit">+ &#8364; 2,500.00</span>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="trans-info">
+                                    <span class="trans-desc">Rent Payment</span>
+                                    <span class="trans-date">Jun 1</span>
+                                </div>
+                                <span class="trans-amount debit">- &#8364; 950.00</span>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="trans-info">
+                                    <span class="trans-desc">Salary Deposit</span>
+                                    <span class="trans-date">May 30</span>
+                                </div>
+                                <span class="trans-amount credit">+ &#8364; 2,150.00</span>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="trans-info">
+                                    <span class="trans-desc">Internet Bill</span>
+                                    <span class="trans-date">May 28</span>
+                                </div>
+                                <span class="trans-amount debit">- &#8364; 35.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
