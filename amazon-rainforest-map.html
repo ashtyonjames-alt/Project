@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Amazon Rainforest — 3 Forest Types Map</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css"/>
 <style>
   :root{
     --bg:#0d1f17;
@@ -38,7 +39,7 @@
     margin:0;
     color:var(--muted);
     font-size:.95rem;
-    max-width:640px;
+    max-width:680px;
     margin:0 auto;
   }
   .layout{
@@ -46,52 +47,32 @@
     flex-wrap:wrap;
     gap:20px;
     padding:20px;
-    max-width:1200px;
+    max-width:1280px;
     margin:0 auto;
     align-items:flex-start;
   }
   .map-card{
-    flex:1 1 560px;
+    flex:2 1 620px;
     background:var(--panel);
     border:1px solid var(--line);
     border-radius:16px;
     padding:16px;
     min-width:320px;
   }
-  .map-card svg{
+  #map{
     width:100%;
-    height:auto;
-    display:block;
+    height:620px;
     border-radius:10px;
+    background:#0a1a12;
   }
-  .legend{
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-    justify-content:center;
-    padding:14px 4px 4px;
-    font-size:.85rem;
-  }
-  .legend button{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:var(--panel-2);
-    border:1px solid var(--line);
-    color:var(--ink);
-    padding:7px 12px;
-    border-radius:999px;
-    cursor:pointer;
-    font-size:.85rem;
-  }
-  .legend button.active{
-    outline:2px solid var(--accent);
-  }
-  .swatch{
-    width:12px;height:12px;border-radius:50%;display:inline-block;
+  .map-hint{
+    color:var(--muted);
+    font-size:.8rem;
+    margin:10px 4px 0;
+    line-height:1.4;
   }
   .side{
-    flex:1 1 360px;
+    flex:1 1 340px;
     min-width:300px;
     display:flex;
     flex-direction:column;
@@ -101,7 +82,8 @@
     background:var(--panel);
     border:1px solid var(--line);
     border-radius:16px;
-    padding:20px;
+    padding:18px;
+    cursor:pointer;
     transition:box-shadow .2s ease;
   }
   .info-card.selected{
@@ -109,199 +91,226 @@
   }
   .info-card h2{
     margin:0 0 4px;
-    font-size:1.15rem;
+    font-size:1.1rem;
     display:flex;
     align-items:center;
     gap:10px;
   }
   .info-card .subtitle{
     color:var(--muted);
-    font-size:.85rem;
-    margin:0 0 12px;
+    font-size:.82rem;
+    margin:0 0 10px;
   }
   .info-card p{
-    margin:0 0 10px;
-    font-size:.92rem;
+    margin:0 0 8px;
+    font-size:.88rem;
     line-height:1.5;
   }
   .info-card p:last-child{margin-bottom:0;}
   .tag{
     display:inline-block;
-    font-size:.72rem;
+    font-size:.7rem;
     color:var(--muted);
     background:var(--panel-2);
     border:1px solid var(--line);
     border-radius:6px;
     padding:2px 8px;
-    margin:0 6px 6px 0;
+    margin:6px 6px 0 0;
   }
-  .marker{
-    cursor:pointer;
+  .swatch{
+    width:12px;height:12px;border-radius:50%;display:inline-block;flex:none;
   }
-  .marker circle.dot{
-    stroke:#fff;
-    stroke-width:1.5;
+  .intersect-card{
+    background:linear-gradient(135deg,#1a3a2d,#132a20);
+    border:1px solid var(--accent);
+    border-radius:16px;
+    padding:18px;
   }
-  .marker text{
-    fill:var(--ink);
-    font-size:11px;
-    font-weight:600;
-    paint-order:stroke;
-    stroke:#0d1f17;
-    stroke-width:3px;
-  }
+  .intersect-card h2{margin:0 0 8px;font-size:1.05rem;}
+  .intersect-card p{margin:0;font-size:.86rem;line-height:1.5;color:var(--ink);}
   footer{
     text-align:center;
     color:var(--muted);
     font-size:.78rem;
     padding:6px 20px 30px;
+    max-width:900px;
+    margin:0 auto;
   }
-  .river-label{
-    fill:#bcd8e6;
-    font-size:11px;
-    font-style:italic;
-    opacity:.85;
+
+  /* Leaflet dark-theme overrides */
+  .leaflet-container{ background:#0a1a12; }
+  .leaflet-control-layers{
+    background:var(--panel-2) !important;
+    color:var(--ink) !important;
+    border:1px solid var(--line) !important;
+    border-radius:10px !important;
   }
-  .country-label{
-    fill:#8fae9a;
-    font-size:13px;
-    letter-spacing:.5px;
+  .leaflet-control-layers-list{ font-size:.85rem; }
+  .leaflet-control-layers a, .leaflet-control-zoom a{
+    background:var(--panel-2) !important;
+    color:var(--ink) !important;
   }
+  .leaflet-popup-content-wrapper{
+    background:var(--panel);
+    color:var(--ink);
+    border-radius:10px;
+  }
+  .leaflet-popup-tip{ background:var(--panel); }
+  .leaflet-popup-content{ font-size:.85rem; line-height:1.4; }
+  .leaflet-popup-content b{ color:var(--accent); }
 </style>
 </head>
 <body>
 
 <header>
   <h1>🌳 The Amazon's 3 Major Forest Types</h1>
-  <p>The Amazon rainforest isn't one uniform forest — ecologists split it into three main types based on <strong>whether and how it floods</strong>. Click a pin or a legend chip to explore each one, with a real example location.</p>
+  <p>The Amazon isn't one uniform forest — it's split into three types based on <strong>whether and how it floods</strong>. This is a real, zoomable map: pan/zoom freely, toggle each forest-type overlay, and look near <strong>Manaus</strong> to see where a whitewater river and a blackwater river physically meet — the closest thing to a real "intersection" of forest types.</p>
 </header>
 
 <div class="layout">
   <div class="map-card">
-    <svg viewBox="0 0 800 640" id="map" role="img" aria-label="Schematic map of the Amazon basin showing terra firme, várzea, and igapó forest locations">
-      <defs>
-        <radialGradient id="basinGrad" cx="45%" cy="45%" r="70%">
-          <stop offset="0%" stop-color="#1f5c3a"/>
-          <stop offset="100%" stop-color="#123c27"/>
-        </radialGradient>
-      </defs>
-
-      <!-- water background -->
-      <rect x="0" y="0" width="800" height="640" fill="#0a1a12"/>
-
-      <!-- simplified / schematic Amazon basin outline (not a precise political map) -->
-      <path d="M120,140
-               C 220,80 330,60 430,90
-               C 540,120 640,130 700,210
-               C 750,280 730,360 690,420
-               C 650,480 590,520 500,540
-               C 400,565 300,555 220,510
-               C 140,465 90,400 80,320
-               C 70,250 60,190 120,140 Z"
-            fill="url(#basinGrad)" stroke="#2c6b45" stroke-width="2"/>
-
-      <!-- country reference labels (approximate placement, not borders) -->
-      <text class="country-label" x="150" y="130">COLOMBIA</text>
-      <text class="country-label" x="105" y="300">PERU</text>
-      <text class="country-label" x="520" y="420" font-size="16" fill="#a9caab" font-weight="600">BRAZIL</text>
-      <text class="country-label" x="190" y="480">BOLIVIA</text>
-      <text class="country-label" x="400" y="95">VENEZUELA</text>
-
-      <!-- rivers -->
-      <path d="M140,300 C 250,330 350,340 430,335 C 520,330 600,300 660,250"
-            fill="none" stroke="#dfe9d0" stroke-width="4" opacity="0.55"/>
-      <text class="river-label" x="270" y="378">Solimões / Amazon River (whitewater)</text>
-
-      <path d="M430,335 C 460,290 470,230 460,170"
-            fill="none" stroke="#3a3a55" stroke-width="4" opacity="0.7"/>
-      <text class="river-label" x="380" y="230" transform="rotate(-70 380 230)">Rio Negro (blackwater)</text>
-
-      <path d="M430,335 C 460,380 500,420 560,440"
-            fill="none" stroke="#8fae9a" stroke-width="3" opacity="0.6"/>
-      <text class="river-label" x="480" y="410" transform="rotate(35 480 410)">Rio Madeira</text>
-
-      <!-- reference city -->
-      <circle cx="430" cy="335" r="4" fill="#eaf5ec"/>
-      <text x="440" y="332" font-size="11" fill="#cfe3d5">Manaus</text>
-
-      <!-- MARKERS -->
-      <g class="marker" data-type="terra" tabindex="0">
-        <circle class="dot" cx="330" cy="230" r="11" fill="var(--terra, #c9974a)"/>
-        <text x="345" y="226">Terra firme</text>
-        <text x="345" y="240" font-size="9" fill="#cbb28a" stroke="none">Ducke Reserve</text>
-      </g>
-
-      <g class="marker" data-type="varzea" tabindex="0">
-        <circle class="dot" cx="250" cy="300" r="11" fill="var(--varzea, #4a90c9)"/>
-        <text x="265" y="296">Várzea</text>
-        <text x="265" y="310" font-size="9" fill="#a9cfe8" stroke="none">Mamirauá Reserve</text>
-      </g>
-
-      <g class="marker" data-type="igapo" tabindex="0">
-        <circle class="dot" cx="465" cy="230" r="11" fill="var(--igapo, #2c6b5f)"/>
-        <text x="480" y="226">Igapó</text>
-        <text x="480" y="240" font-size="9" fill="#9fd4c4" stroke="none">Anavilhanas Archipelago</text>
-      </g>
-
-    </svg>
-
-    <div class="legend">
-      <button data-type="terra" class="legend-btn"><span class="swatch" style="background:var(--terra)"></span> Terra firme</button>
-      <button data-type="varzea" class="legend-btn"><span class="swatch" style="background:var(--varzea)"></span> Várzea</button>
-      <button data-type="igapo" class="legend-btn"><span class="swatch" style="background:var(--igapo)"></span> Igapó</button>
-    </div>
+    <div id="map"></div>
+    <p class="map-hint">Use the layers control (top-right of the map) to toggle each forest type on/off. River-corridor overlays are illustrative floodplain buffers, not surveyed boundaries — real floodplain width varies a lot by season and location.</p>
   </div>
 
   <div class="side">
-    <div class="info-card" data-type="terra">
+    <div class="info-card" data-type="terra" data-lat="-2.9587" data-lng="-59.9645" data-zoom="11">
       <h2><span class="swatch" style="background:var(--terra)"></span> Terra Firme Forest</h2>
-      <p class="subtitle">Example: Adolpho Ducke Forest Reserve, near Manaus, Brazil</p>
-      <p>"Terra firme" means "firm ground" — this forest sits on higher terrain that <strong>never floods</strong>. It makes up roughly <strong>85–90% of the whole Amazon basin</strong>, making it the dominant forest type by far.</p>
-      <p>Soils here are old, deeply weathered, and nutrient-poor, so trees rely heavily on rapid nutrient cycling from leaf litter rather than fertile soil. Despite poor soil, terra firme holds the <strong>highest tree-species diversity</strong> in the Amazon because conditions have been stable for very long stretches of time.</p>
-      <span class="tag">Never floods</span><span class="tag">Poor soil</span><span class="tag">Highest biodiversity</span>
+      <p class="subtitle">Example: Adolpho Ducke Forest Reserve, near Manaus</p>
+      <p>Upland forest that <strong>never floods</strong> — roughly 85–90% of the whole Amazon basin. Poor, ancient soils, but the <strong>highest tree-species diversity</strong> of the three types.</p>
+      <span class="tag">Never floods</span><span class="tag">Poor soil</span>
     </div>
 
-    <div class="info-card" data-type="varzea">
+    <div class="info-card" data-type="varzea" data-lat="-3.083" data-lng="-64.833" data-zoom="9">
       <h2><span class="swatch" style="background:var(--varzea)"></span> Várzea Forest</h2>
-      <p class="subtitle">Example: Mamirauá Sustainable Development Reserve, Amazonas, Brazil</p>
-      <p>Várzea forest floods seasonally along <strong>"whitewater" rivers</strong> like the Amazon/Solimões, which carry nutrient-rich sediment washed down from the Andes. Floodwaters can rise <strong>6–10 meters</strong> a year.</p>
-      <p>Because the sediment is fertile, várzea soils are the richest in the Amazon — historically important for farming and fishing communities, and a key feeding ground for fish that eat fallen fruit during high water.</p>
-      <span class="tag">Seasonal flooding</span><span class="tag">Fertile silt</span><span class="tag">Whitewater rivers</span>
+      <p class="subtitle">Example: Mamirauá Reserve, near Tefé</p>
+      <p>Floods seasonally along <strong>whitewater rivers</strong> (like the Solimões/Amazon) carrying fertile Andean sediment. Richest soils in the basin.</p>
+      <span class="tag">Seasonal flood</span><span class="tag">Fertile silt</span>
     </div>
 
-    <div class="info-card" data-type="igapo">
+    <div class="info-card" data-type="igapo" data-lat="-2.68" data-lng="-60.95" data-zoom="10">
       <h2><span class="swatch" style="background:var(--igapo)"></span> Igapó Forest</h2>
-      <p class="subtitle">Example: Anavilhanas Archipelago, Rio Negro, Brazil</p>
-      <p>Igapó forest floods along <strong>"blackwater" or "clearwater" rivers</strong> such as the Rio Negro — dark, tannin-stained, acidic water carrying very little sediment. Some igapó areas stay flooded most of the year.</p>
-      <p>Low nutrients mean slower growth and different, specially adapted tree species (many with stilt roots or floating seeds). It's famous for the "meeting of waters" near Manaus, where the dark Rio Negro and pale Solimões flow side-by-side without mixing for kilometers.</p>
-      <span class="tag">Longest flooding</span><span class="tag">Nutrient-poor</span><span class="tag">Blackwater rivers</span>
+      <p class="subtitle">Example: Anavilhanas Archipelago, Rio Negro</p>
+      <p>Floods along <strong>blackwater rivers</strong> (like the Rio Negro) — acidic, sediment-poor, tannin-stained water. Slower growth, specially adapted trees.</p>
+      <span class="tag">Longest flood</span><span class="tag">Nutrient-poor</span>
+    </div>
+
+    <div class="intersect-card" data-lat="-3.1386" data-lng="-59.8968" data-zoom="12" style="cursor:pointer;">
+      <h2>💧 Where they meet: Encontro das Águas</h2>
+      <p>Just outside Manaus, the dark, blackwater Rio Negro (feeding igapó forest) meets the pale, sediment-rich Solimões (feeding várzea forest) and flows side-by-side for kilometers before mixing — with terra firme upland on both banks. Click to fly there and see the overlay corridors overlap.</p>
     </div>
   </div>
 </div>
 
 <footer>
-  Map is a simplified schematic for orientation, not a precise geographic/political boundary map. Forest-type classification follows the flooding-regime scheme first described by botanist Ghillean Prance (1980).
+  River courses and floodplain corridors are simplified for illustration (buffered ~6–8&nbsp;km around approximate river center-lines), not surveyed hydrological data. Reserve boundaries are approximated as circles sized to each reserve's real published area. Forest-type classification follows the flooding-regime scheme first described by botanist Ghillean Prance (1980). Map tiles &copy; OpenStreetMap contributors.
 </footer>
 
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="vendor/turf/turf.min.js"></script>
 <script>
-  const cards = document.querySelectorAll('.info-card');
-  const legendBtns = document.querySelectorAll('.legend-btn');
-  const markers = document.querySelectorAll('.marker');
+  const map = L.map('map', { scrollWheelZoom: true }).setView([-3.6, -61.5], 6);
 
-  function select(type){
-    cards.forEach(c => c.classList.toggle('selected', c.dataset.type === type));
-    legendBtns.forEach(b => b.classList.toggle('active', b.dataset.type === type));
-    if(type){
-      const card = document.querySelector('.info-card[data-type="'+type+'"]');
-      if(card) card.scrollIntoView({behavior:'smooth', block:'nearest'});
-    }
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 17,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Real-ish river waypoints [lat, lng] near Manaus, simplified from known course.
+  const negroWaypoints = [
+    [-2.6203, -60.9422], // Novo Airão / Anavilhanas
+    [-2.9200, -60.3500],
+    [-3.0700, -60.1200],
+    [-3.1200, -60.0300],
+    [-3.1386, -59.8968]  // Encontro das Águas confluence
+  ];
+
+  const solimoesAmazonWaypoints = [
+    [-3.3550, -64.7100], // Tefé
+    [-3.3300, -62.5000],
+    [-3.2500, -61.0000],
+    [-3.2000, -60.2000],
+    [-3.1600, -60.0500],
+    [-3.1386, -59.8968], // confluence
+    [-2.9500, -58.7000], // continues east as the Amazon River
+    [-1.9500, -55.5000]
+  ];
+
+  function toLngLatLine(waypoints){
+    return turf.lineString(waypoints.map(([lat,lng]) => [lng, lat]));
   }
 
-  markers.forEach(m => {
-    m.addEventListener('click', () => select(m.dataset.type));
-    m.addEventListener('keypress', e => { if(e.key === 'Enter') select(m.dataset.type); });
+  function bufferToLeafletLayer(waypoints, km, style){
+    const line = toLngLatLine(waypoints);
+    const buffered = turf.buffer(line, km, { units: 'kilometers' });
+    return L.geoJSON(buffered, { style });
+  }
+
+  // --- Overlay: várzea corridor (whitewater floodplain) ---
+  const varzeaCorridor = bufferToLeafletLayer(solimoesAmazonWaypoints, 8, {
+    color: '#4a90c9', weight: 1, fillColor: '#4a90c9', fillOpacity: 0.32
   });
-  legendBtns.forEach(b => b.addEventListener('click', () => select(b.dataset.type)));
+  const varzeaRiverLine = L.polyline(solimoesAmazonWaypoints, { color:'#dfe9ff', weight:2, opacity:0.7, dashArray:'4,4' });
+  const mamiraua = L.circle([-3.083, -64.833], {
+    radius: 59800, color:'#4a90c9', weight:2, fillColor:'#4a90c9', fillOpacity:0.15
+  }).bindPopup('<b>Mamirauá Sustainable Development Reserve</b><br>~11,240 km² of várzea floodplain forest at the Solimões/Japurá confluence near Tefé, AM.');
+  const varzeaLayer = L.layerGroup([varzeaCorridor, varzeaRiverLine, mamiraua]);
+
+  // --- Overlay: igapó corridor (blackwater floodplain) ---
+  const igapoCorridor = bufferToLeafletLayer(negroWaypoints, 6, {
+    color: '#2c6b5f', weight: 1, fillColor: '#2c6b5f', fillOpacity: 0.32
+  });
+  const igapoRiverLine = L.polyline(negroWaypoints, { color:'#0d2a24', weight:2, opacity:0.8, dashArray:'4,4' });
+  const anavilhanas = L.circle([-2.68, -60.95], {
+    radius: 33400, color:'#2c6b5f', weight:2, fillColor:'#2c6b5f', fillOpacity:0.15
+  }).bindPopup('<b>Anavilhanas Archipelago (National Park)</b><br>~3,500 km² of igapó blackwater floodplain forest on the Rio Negro.');
+  const igapoLayer = L.layerGroup([igapoCorridor, igapoRiverLine, anavilhanas]);
+
+  // --- Overlay: terra firme example reserve ---
+  const ducke = L.circle([-2.9587, -59.9645], {
+    radius: 5640, color:'#c9974a', weight:2, fillColor:'#c9974a', fillOpacity:0.25
+  }).bindPopup('<b>Adolpho Ducke Forest Reserve</b><br>~100 km² of upland terra firme forest, never flooded, just north of Manaus.');
+  const terraFirmeLayer = L.layerGroup([ducke]);
+
+  // --- Overlay: the meeting point itself ---
+  const meetingIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:14px;height:14px;border-radius:50%;background:#eaf5ec;border:2px solid #7fd99a;box-shadow:0 0 6px #7fd99a;"></div>',
+    iconSize: [14,14]
+  });
+  const meetingMarker = L.marker([-3.1386, -59.8968], { icon: meetingIcon })
+    .bindPopup('<b>Encontro das Águas (Meeting of Waters)</b><br>The blackwater Rio Negro (igapó) meets the whitewater Solimões (várzea) and they flow side-by-side for several km before mixing, with terra firme forest on the surrounding uplands. Zoom in here to see the corridor overlays overlap.');
+  const meetingLayer = L.layerGroup([meetingMarker]);
+
+  terraFirmeLayer.addTo(map);
+  varzeaLayer.addTo(map);
+  igapoLayer.addTo(map);
+  meetingLayer.addTo(map);
+
+  L.control.layers(null, {
+    'Terra firme (example reserve)': terraFirmeLayer,
+    'Várzea corridor (whitewater)': varzeaLayer,
+    'Igapó corridor (blackwater)': igapoLayer,
+    'Meeting of Waters marker': meetingLayer
+  }, { collapsed: false }).addTo(map);
+
+  // --- Side card interactions ---
+  const cards = document.querySelectorAll('.info-card, .intersect-card');
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      cards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      const lat = parseFloat(card.dataset.lat);
+      const lng = parseFloat(card.dataset.lng);
+      const zoom = parseFloat(card.dataset.zoom) || 10;
+      map.flyTo([lat, lng], zoom, { duration: 1.2 });
+
+      if (card.dataset.type === 'terra') ducke.openPopup();
+      if (card.dataset.type === 'varzea') mamiraua.openPopup();
+      if (card.dataset.type === 'igapo') anavilhanas.openPopup();
+      if (!card.dataset.type) meetingMarker.openPopup();
+    });
+  });
 </script>
 
 </body>
