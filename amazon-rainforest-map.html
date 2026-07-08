@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Rainforest — 3 Forest Types Map</title>
+<style>
+  :root{
+    --bg:#0d1f17;
+    --panel:#123322;
+    --panel-2:#0f2a1c;
+    --ink:#eaf5ec;
+    --muted:#9db8a8;
+    --line:#1f4a30;
+    --terra:#c9974a;
+    --varzea:#4a90c9;
+    --igapo:#2c6b5f;
+    --accent:#7fd99a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(circle at 20% 0%,#123322,#0a1a12 70%);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  header{
+    padding:28px 24px 8px;
+    text-align:center;
+  }
+  header h1{
+    margin:0 0 6px;
+    font-size:1.7rem;
+    letter-spacing:.3px;
+  }
+  header p{
+    margin:0;
+    color:var(--muted);
+    font-size:.95rem;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .layout{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    padding:20px;
+    max-width:1200px;
+    margin:0 auto;
+    align-items:flex-start;
+  }
+  .map-card{
+    flex:1 1 560px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:16px;
+    min-width:320px;
+  }
+  .map-card svg{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:10px;
+  }
+  .legend{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    justify-content:center;
+    padding:14px 4px 4px;
+    font-size:.85rem;
+  }
+  .legend button{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:7px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    font-size:.85rem;
+  }
+  .legend button.active{
+    outline:2px solid var(--accent);
+  }
+  .swatch{
+    width:12px;height:12px;border-radius:50%;display:inline-block;
+  }
+  .side{
+    flex:1 1 360px;
+    min-width:300px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .info-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px;
+    transition:box-shadow .2s ease;
+  }
+  .info-card.selected{
+    box-shadow:0 0 0 2px var(--accent);
+  }
+  .info-card h2{
+    margin:0 0 4px;
+    font-size:1.15rem;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .info-card .subtitle{
+    color:var(--muted);
+    font-size:.85rem;
+    margin:0 0 12px;
+  }
+  .info-card p{
+    margin:0 0 10px;
+    font-size:.92rem;
+    line-height:1.5;
+  }
+  .info-card p:last-child{margin-bottom:0;}
+  .tag{
+    display:inline-block;
+    font-size:.72rem;
+    color:var(--muted);
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:2px 8px;
+    margin:0 6px 6px 0;
+  }
+  .marker{
+    cursor:pointer;
+  }
+  .marker circle.dot{
+    stroke:#fff;
+    stroke-width:1.5;
+  }
+  .marker text{
+    fill:var(--ink);
+    font-size:11px;
+    font-weight:600;
+    paint-order:stroke;
+    stroke:#0d1f17;
+    stroke-width:3px;
+  }
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:.78rem;
+    padding:6px 20px 30px;
+  }
+  .river-label{
+    fill:#bcd8e6;
+    font-size:11px;
+    font-style:italic;
+    opacity:.85;
+  }
+  .country-label{
+    fill:#8fae9a;
+    font-size:13px;
+    letter-spacing:.5px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌳 The Amazon's 3 Major Forest Types</h1>
+  <p>The Amazon rainforest isn't one uniform forest — ecologists split it into three main types based on <strong>whether and how it floods</strong>. Click a pin or a legend chip to explore each one, with a real example location.</p>
+</header>
+
+<div class="layout">
+  <div class="map-card">
+    <svg viewBox="0 0 800 640" id="map" role="img" aria-label="Schematic map of the Amazon basin showing terra firme, várzea, and igapó forest locations">
+      <defs>
+        <radialGradient id="basinGrad" cx="45%" cy="45%" r="70%">
+          <stop offset="0%" stop-color="#1f5c3a"/>
+          <stop offset="100%" stop-color="#123c27"/>
+        </radialGradient>
+      </defs>
+
+      <!-- water background -->
+      <rect x="0" y="0" width="800" height="640" fill="#0a1a12"/>
+
+      <!-- simplified / schematic Amazon basin outline (not a precise political map) -->
+      <path d="M120,140
+               C 220,80 330,60 430,90
+               C 540,120 640,130 700,210
+               C 750,280 730,360 690,420
+               C 650,480 590,520 500,540
+               C 400,565 300,555 220,510
+               C 140,465 90,400 80,320
+               C 70,250 60,190 120,140 Z"
+            fill="url(#basinGrad)" stroke="#2c6b45" stroke-width="2"/>
+
+      <!-- country reference labels (approximate placement, not borders) -->
+      <text class="country-label" x="150" y="130">COLOMBIA</text>
+      <text class="country-label" x="105" y="300">PERU</text>
+      <text class="country-label" x="520" y="420" font-size="16" fill="#a9caab" font-weight="600">BRAZIL</text>
+      <text class="country-label" x="190" y="480">BOLIVIA</text>
+      <text class="country-label" x="400" y="95">VENEZUELA</text>
+
+      <!-- rivers -->
+      <path d="M140,300 C 250,330 350,340 430,335 C 520,330 600,300 660,250"
+            fill="none" stroke="#dfe9d0" stroke-width="4" opacity="0.55"/>
+      <text class="river-label" x="270" y="378">Solimões / Amazon River (whitewater)</text>
+
+      <path d="M430,335 C 460,290 470,230 460,170"
+            fill="none" stroke="#3a3a55" stroke-width="4" opacity="0.7"/>
+      <text class="river-label" x="380" y="230" transform="rotate(-70 380 230)">Rio Negro (blackwater)</text>
+
+      <path d="M430,335 C 460,380 500,420 560,440"
+            fill="none" stroke="#8fae9a" stroke-width="3" opacity="0.6"/>
+      <text class="river-label" x="480" y="410" transform="rotate(35 480 410)">Rio Madeira</text>
+
+      <!-- reference city -->
+      <circle cx="430" cy="335" r="4" fill="#eaf5ec"/>
+      <text x="440" y="332" font-size="11" fill="#cfe3d5">Manaus</text>
+
+      <!-- MARKERS -->
+      <g class="marker" data-type="terra" tabindex="0">
+        <circle class="dot" cx="330" cy="230" r="11" fill="var(--terra, #c9974a)"/>
+        <text x="345" y="226">Terra firme</text>
+        <text x="345" y="240" font-size="9" fill="#cbb28a" stroke="none">Ducke Reserve</text>
+      </g>
+
+      <g class="marker" data-type="varzea" tabindex="0">
+        <circle class="dot" cx="250" cy="300" r="11" fill="var(--varzea, #4a90c9)"/>
+        <text x="265" y="296">Várzea</text>
+        <text x="265" y="310" font-size="9" fill="#a9cfe8" stroke="none">Mamirauá Reserve</text>
+      </g>
+
+      <g class="marker" data-type="igapo" tabindex="0">
+        <circle class="dot" cx="465" cy="230" r="11" fill="var(--igapo, #2c6b5f)"/>
+        <text x="480" y="226">Igapó</text>
+        <text x="480" y="240" font-size="9" fill="#9fd4c4" stroke="none">Anavilhanas Archipelago</text>
+      </g>
+
+    </svg>
+
+    <div class="legend">
+      <button data-type="terra" class="legend-btn"><span class="swatch" style="background:var(--terra)"></span> Terra firme</button>
+      <button data-type="varzea" class="legend-btn"><span class="swatch" style="background:var(--varzea)"></span> Várzea</button>
+      <button data-type="igapo" class="legend-btn"><span class="swatch" style="background:var(--igapo)"></span> Igapó</button>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="info-card" data-type="terra">
+      <h2><span class="swatch" style="background:var(--terra)"></span> Terra Firme Forest</h2>
+      <p class="subtitle">Example: Adolpho Ducke Forest Reserve, near Manaus, Brazil</p>
+      <p>"Terra firme" means "firm ground" — this forest sits on higher terrain that <strong>never floods</strong>. It makes up roughly <strong>85–90% of the whole Amazon basin</strong>, making it the dominant forest type by far.</p>
+      <p>Soils here are old, deeply weathered, and nutrient-poor, so trees rely heavily on rapid nutrient cycling from leaf litter rather than fertile soil. Despite poor soil, terra firme holds the <strong>highest tree-species diversity</strong> in the Amazon because conditions have been stable for very long stretches of time.</p>
+      <span class="tag">Never floods</span><span class="tag">Poor soil</span><span class="tag">Highest biodiversity</span>
+    </div>
+
+    <div class="info-card" data-type="varzea">
+      <h2><span class="swatch" style="background:var(--varzea)"></span> Várzea Forest</h2>
+      <p class="subtitle">Example: Mamirauá Sustainable Development Reserve, Amazonas, Brazil</p>
+      <p>Várzea forest floods seasonally along <strong>"whitewater" rivers</strong> like the Amazon/Solimões, which carry nutrient-rich sediment washed down from the Andes. Floodwaters can rise <strong>6–10 meters</strong> a year.</p>
+      <p>Because the sediment is fertile, várzea soils are the richest in the Amazon — historically important for farming and fishing communities, and a key feeding ground for fish that eat fallen fruit during high water.</p>
+      <span class="tag">Seasonal flooding</span><span class="tag">Fertile silt</span><span class="tag">Whitewater rivers</span>
+    </div>
+
+    <div class="info-card" data-type="igapo">
+      <h2><span class="swatch" style="background:var(--igapo)"></span> Igapó Forest</h2>
+      <p class="subtitle">Example: Anavilhanas Archipelago, Rio Negro, Brazil</p>
+      <p>Igapó forest floods along <strong>"blackwater" or "clearwater" rivers</strong> such as the Rio Negro — dark, tannin-stained, acidic water carrying very little sediment. Some igapó areas stay flooded most of the year.</p>
+      <p>Low nutrients mean slower growth and different, specially adapted tree species (many with stilt roots or floating seeds). It's famous for the "meeting of waters" near Manaus, where the dark Rio Negro and pale Solimões flow side-by-side without mixing for kilometers.</p>
+      <span class="tag">Longest flooding</span><span class="tag">Nutrient-poor</span><span class="tag">Blackwater rivers</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Map is a simplified schematic for orientation, not a precise geographic/political boundary map. Forest-type classification follows the flooding-regime scheme first described by botanist Ghillean Prance (1980).
+</footer>
+
+<script>
+  const cards = document.querySelectorAll('.info-card');
+  const legendBtns = document.querySelectorAll('.legend-btn');
+  const markers = document.querySelectorAll('.marker');
+
+  function select(type){
+    cards.forEach(c => c.classList.toggle('selected', c.dataset.type === type));
+    legendBtns.forEach(b => b.classList.toggle('active', b.dataset.type === type));
+    if(type){
+      const card = document.querySelector('.info-card[data-type="'+type+'"]');
+      if(card) card.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+  }
+
+  markers.forEach(m => {
+    m.addEventListener('click', () => select(m.dataset.type));
+    m.addEventListener('keypress', e => { if(e.key === 'Enter') select(m.dataset.type); });
+  });
+  legendBtns.forEach(b => b.addEventListener('click', () => select(b.dataset.type)));
+</script>
+
+</body>
+</html>
