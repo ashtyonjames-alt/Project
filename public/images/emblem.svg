@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" fill="none">
+  <!-- Shield outline -->
+  <path d="M100 10 L180 40 L180 130 Q180 190 100 225 Q20 190 20 130 L20 40 Z" fill="#1B2A4A" stroke="#C9A84C" stroke-width="3"/>
+  <!-- Shield inner border -->
+  <path d="M100 22 L168 48 L168 130 Q168 182 100 213 Q32 182 32 130 L32 48 Z" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Mountain range -->
+  <path d="M50 140 L72 108 L88 125 L100 95 L112 125 L128 108 L150 140 Z" fill="#C9A84C" opacity="0.9"/>
+
+  <!-- Star above mountains -->
+  <polygon points="100,52 104,64 117,64 107,72 111,84 100,76 89,84 93,72 83,64 96,64" fill="#C9A84C"/>
+
+  <!-- Wheat left -->
+  <line x1="48" y1="155" x2="48" y2="185" stroke="#C9A84C" stroke-width="2"/>
+  <ellipse cx="44" cy="160" rx="4" ry="7" fill="#C9A84C" transform="rotate(-20 44 160)"/>
+  <ellipse cx="48" cy="156" rx="4" ry="7" fill="#C9A84C" transform="rotate(-10 48 156)"/>
+  <ellipse cx="52" cy="160" rx="4" ry="7" fill="#C9A84C" transform="rotate(20 52 160)"/>
+
+  <!-- Wheat right -->
+  <line x1="152" y1="155" x2="152" y2="185" stroke="#C9A84C" stroke-width="2"/>
+  <ellipse cx="148" cy="160" rx="4" ry="7" fill="#C9A84C" transform="rotate(-20 148 160)"/>
+  <ellipse cx="152" cy="156" rx="4" ry="7" fill="#C9A84C" transform="rotate(-10 152 156)"/>
+  <ellipse cx="156" cy="160" rx="4" ry="7" fill="#C9A84C" transform="rotate(20 156 160)"/>
+
+  <!-- Banner ribbon -->
+  <path d="M38 190 Q100 200 162 190 L162 205 Q100 215 38 205 Z" fill="#C9A84C"/>
+  <path d="M38 190 L30 197 L38 205 M162 190 L170 197 L162 205" fill="#C9A84C"/>
+
+  <!-- Banner text -->
+  <text x="100" y="201" text-anchor="middle" font-family="serif" font-size="9" fill="#1B2A4A" font-weight="bold" letter-spacing="1">UNITAS · ET · PROSPERITAS</text>
+</svg>
