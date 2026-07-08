@@ -2452,14 +2452,12 @@ body.dark-mode .ai-input-row input { background: #2a2a2a; border-color: #444; co
             <p class="login-subtitle">Secure Access to All Government Services</p>
 
             <div class="bday-banner">
-                <div class="bday-top">&#127874; Happy Birthday! &#127874;</div>
+                <div class="bday-top">&#127932; The Eighth of January &#127932;</div>
                 <div class="bday-lyrics">
-                    &#9835; Happy Birthday to you,<br>
-                    Happy Birthday to you,<br>
-                    Happy Birthday, dear Slavakia,<br>
-                    Happy Birthday to you! &#9835;
+                    Traditional American fiddle tune &mdash; circa 1815<br>
+                    <em>Battle of New Orleans melody &bull; Public Domain</em>
                 </div>
-                <button class="bday-play-btn" onclick="playHappyBirthday(this)">&#9654; Play Melody</button>
+                <button class="bday-play-btn" onclick="playEighthOfJanuary(this)">&#9654; Play Tune</button>
             </div>
 
             <div class="login-tabs">
@@ -3218,36 +3216,45 @@ function switchLoginTab(tabId, btn) {
     btn.classList.add('active');
 }
 
-function playHappyBirthday(btn) {
+function playEighthOfJanuary(btn) {
     var AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) { alert('Audio not supported in this browser.'); return; }
     var ctx = new AudioCtx();
-    // [frequency Hz, duration seconds]  0 = rest
-    var notes = [
-        [261.63,0.25],[261.63,0.25],[293.66,0.5],[261.63,0.5],[349.23,0.75],[329.63,0.75],[0,0.3],
-        [261.63,0.25],[261.63,0.25],[293.66,0.5],[261.63,0.5],[392.00,0.75],[349.23,0.75],[0,0.3],
-        [261.63,0.25],[261.63,0.25],[523.25,0.5],[440.00,0.5],[349.23,0.5],[329.63,0.25],[293.66,0.75],[0,0.3],
-        [466.16,0.25],[466.16,0.25],[440.00,0.5],[349.23,0.5],[392.00,0.75],[349.23,1.1]
+    // "The Eighth of January" — traditional fiddle tune, G major
+    // [freq Hz, duration s]  0 = rest
+    var G4=392,A4=440,B4=493.88,C5=523.25,D5=587.33,E5=659.25,G5=783.99;
+    var n = [
+        // Part A (x2)
+        [G4,.2],[G4,.2],[A4,.2],[B4,.2],[D5,.4],[0,.1],[B4,.2],[A4,.2],[G4,.45],[0,.15],
+        [G4,.2],[G4,.2],[A4,.2],[B4,.2],[D5,.4],[0,.1],[C5,.2],[B4,.2],[A4,.2],[G4,.55],[0,.2],
+        [G4,.2],[G4,.2],[A4,.2],[B4,.2],[D5,.4],[0,.1],[B4,.2],[A4,.2],[G4,.45],[0,.15],
+        [G4,.2],[G4,.2],[A4,.2],[B4,.2],[D5,.4],[0,.1],[C5,.2],[B4,.2],[A4,.2],[G4,.55],[0,.3],
+        // Part B (x2)
+        [D5,.2],[E5,.2],[D5,.2],[B4,.2],[G4,.4],[0,.1],[B4,.2],[A4,.2],[G4,.45],[0,.15],
+        [G4,.2],[G4,.2],[A4,.2],[B4,.2],[D5,.4],[0,.1],[C5,.2],[B4,.2],[A4,.2],[G4,.55],[0,.2],
+        [D5,.2],[E5,.2],[D5,.2],[B4,.2],[G4,.4],[0,.1],[B4,.2],[A4,.2],[G4,.45],[0,.15],
+        [G4,.2],[G4,.2],[A4,.2],[B4,.2],[D5,.4],[0,.1],[C5,.2],[B4,.2],[A4,.2],[G4,.7]
     ];
     var t = ctx.currentTime + 0.05;
-    for (var i = 0; i < notes.length; i++) {
-        var freq = notes[i][0], dur = notes[i][1];
+    for (var i = 0; i < n.length; i++) {
+        var freq = n[i][0], dur = n[i][1];
         if (freq > 0) {
             var osc = ctx.createOscillator();
             var gain = ctx.createGain();
             osc.connect(gain); gain.connect(ctx.destination);
-            osc.type = 'sine';
+            osc.type = 'sawtooth';
             osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0.28, t);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.88);
+            gain.gain.setValueAtTime(0.18, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.85);
             osc.start(t); osc.stop(t + dur);
         }
         t += dur;
     }
     if (btn) {
-        btn.textContent = '&#9834; Playing...';
+        btn.innerHTML = '&#9834; Playing...';
         btn.disabled = true;
-        setTimeout(function() { btn.innerHTML = '&#9654; Play Melody'; btn.disabled = false; }, t * 1000 - ctx.currentTime * 1000 + 200);
+        var delay = (t - ctx.currentTime) * 1000 + 200;
+        setTimeout(function() { btn.innerHTML = '&#9654; Play Tune'; btn.disabled = false; }, delay);
     }
 }
 
