@@ -276,8 +276,48 @@ body {
 .login-subtitle {
     color: var(--text-light);
     font-size: 13px;
-    margin-bottom: 30px;
+    margin-bottom: 16px;
 }
+.bday-banner {
+    background: linear-gradient(135deg, rgba(201,162,39,0.15) 0%, rgba(26,35,126,0.3) 100%);
+    border: 2px solid #c9a227;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 0 0 20px 0;
+    text-align: center;
+    animation: bdayGlow 2.5s ease-in-out infinite;
+}
+@keyframes bdayGlow {
+    0%, 100% { box-shadow: 0 0 6px rgba(201,162,39,0.3); }
+    50% { box-shadow: 0 0 18px rgba(201,162,39,0.7); }
+}
+.bday-top {
+    font-size: 17px;
+    font-weight: 700;
+    color: #c9a227;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+.bday-lyrics {
+    color: rgba(255,255,255,0.88);
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.65;
+    margin-bottom: 10px;
+}
+body:not(.dark-mode) .bday-lyrics { color: #1a237e; }
+.bday-play-btn {
+    background: #c9a227;
+    color: #1a237e;
+    border: none;
+    border-radius: 20px;
+    padding: 5px 20px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+.bday-play-btn:hover { background: #e5c840; transform: scale(1.06); }
 
 .input-group {
     text-align: left;
@@ -2411,6 +2451,17 @@ body.dark-mode .ai-input-row input { background: #2a2a2a; border-color: #444; co
             <h2>National Government Portal</h2>
             <p class="login-subtitle">Secure Access to All Government Services</p>
 
+            <div class="bday-banner">
+                <div class="bday-top">&#127874; Happy Birthday! &#127874;</div>
+                <div class="bday-lyrics">
+                    &#9835; Happy Birthday to you,<br>
+                    Happy Birthday to you,<br>
+                    Happy Birthday, dear Slavakia,<br>
+                    Happy Birthday to you! &#9835;
+                </div>
+                <button class="bday-play-btn" onclick="playHappyBirthday(this)">&#9654; Play Melody</button>
+            </div>
+
             <div class="login-tabs">
                 <button class="login-tab active" onclick="switchLoginTab('login-tab-login', this)">Login</button>
                 <button class="login-tab" onclick="switchLoginTab('login-tab-about', this)">About Us</button>
@@ -3165,6 +3216,39 @@ function switchLoginTab(tabId, btn) {
     document.querySelectorAll('.login-tab').forEach(function(b) { b.classList.remove('active'); });
     document.getElementById(tabId).classList.add('active');
     btn.classList.add('active');
+}
+
+function playHappyBirthday(btn) {
+    var AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) { alert('Audio not supported in this browser.'); return; }
+    var ctx = new AudioCtx();
+    // [frequency Hz, duration seconds]  0 = rest
+    var notes = [
+        [261.63,0.25],[261.63,0.25],[293.66,0.5],[261.63,0.5],[349.23,0.75],[329.63,0.75],[0,0.3],
+        [261.63,0.25],[261.63,0.25],[293.66,0.5],[261.63,0.5],[392.00,0.75],[349.23,0.75],[0,0.3],
+        [261.63,0.25],[261.63,0.25],[523.25,0.5],[440.00,0.5],[349.23,0.5],[329.63,0.25],[293.66,0.75],[0,0.3],
+        [466.16,0.25],[466.16,0.25],[440.00,0.5],[349.23,0.5],[392.00,0.75],[349.23,1.1]
+    ];
+    var t = ctx.currentTime + 0.05;
+    for (var i = 0; i < notes.length; i++) {
+        var freq = notes[i][0], dur = notes[i][1];
+        if (freq > 0) {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.28, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.88);
+            osc.start(t); osc.stop(t + dur);
+        }
+        t += dur;
+    }
+    if (btn) {
+        btn.textContent = '&#9834; Playing...';
+        btn.disabled = true;
+        setTimeout(function() { btn.innerHTML = '&#9654; Play Melody'; btn.disabled = false; }, t * 1000 - ctx.currentTime * 1000 + 200);
+    }
 }
 
 function doLogin() {
