@@ -66,9 +66,14 @@
   .layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
   @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
   .chart-card { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-  svg { max-width: 280px; width: 100%; height: auto; overflow: visible; }
-  .slice { stroke: var(--surface-1); stroke-width: 2; cursor: pointer; }
+  svg { max-width: 280px; width: 100%; height: auto; overflow: visible; touch-action: none; }
+  .slice { stroke: var(--surface-1); stroke-width: 2; }
   .slice-label { font-size: 11px; font-weight: 600; fill: #fff; pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
+  .handle-hit { fill: transparent; cursor: grab; }
+  .handle-dot { fill: var(--surface-1); stroke: var(--text-primary); stroke-width: 1.5; pointer-events: none; }
+  .handle-hit.locked { cursor: not-allowed; }
+  .handle-dot.locked { opacity: 0.35; }
+  svg.dragging, svg.dragging .handle-hit { cursor: grabbing; }
   .legend { width: 100%; display: flex; flex-direction: column; gap: 8px; }
   .legend-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
   .swatch { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; }
@@ -156,7 +161,7 @@
       <div class="add-row">
         <button class="add-btn" id="addCategoryBtn" type="button">+ Add category</button>
       </div>
-      <p class="hint">Lock a category (🔒) to keep it fixed while others rebalance. Unallocated shows as the gray slice until it's all assigned.</p>
+      <p class="hint">Drag the dots on the pie's edge to resize slices directly, or use the sliders. Lock a category (🔒) to keep it fixed while others rebalance. Unallocated shows as the gray slice until it's all assigned.</p>
     </div>
   </div>
 </div>
@@ -248,9 +253,12 @@
 
   function addCategory() {
     var idx = state.categories.length % 8;
-    state.categories.push({ id: makeId(), name: 'New category', percent: 0, locked: false, colorIndex: idx });
+    var id = makeId();
+    state.categories.push({ id: id, name: 'New category', percent: 0, locked: false, colorIndex: idx });
     render();
     saveState();
+    var row = document.querySelector('input.cat-name[data-id="' + id + '"]');
+    if (row) { row.focus(); row.select(); }
   }
 
   function removeCategory(id) {
@@ -287,47 +295,136 @@
 
   function colorVar(idx) { return 'var(' + PALETTE_VARS[idx % 8] + ')'; }
 
-  function renderChart(slices) {
+  var CX = 100, CY = 100, R = 96;
+
+  // fullSlices: state.categories (in order) followed by the Unallocated pseudo-slice.
+  // Draggable boundaries are the interior cumulative points (excludes the fixed 0/360 seam).
+  function renderChart(fullSlices) {
     var svg = document.getElementById('pieSvg');
     svg.innerHTML = '';
-    var cx = 100, cy = 100, r = 96;
-    var nonZero = slices.filter(function (s) { return s.percent > 0.05; });
 
+    var cum = [0];
+    fullSlices.forEach(function (s) { cum.push(cum[cum.length - 1] + (s.percent / 100) * 360); });
+
+    var nonZero = fullSlices.filter(function (s) { return s.percent > 0.05; });
     if (nonZero.length === 0) {
       var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+      circle.setAttribute('cx', CX); circle.setAttribute('cy', CY); circle.setAttribute('r', R);
       circle.setAttribute('fill', 'var(--unallocated)');
       svg.appendChild(circle);
-      return;
-    }
-
-    if (nonZero.length === 1 && nonZero[0].percent >= 99.9) {
+    } else if (nonZero.length === 1 && nonZero[0].percent >= 99.9) {
       var only = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      only.setAttribute('cx', cx); only.setAttribute('cy', cy); only.setAttribute('r', r);
+      only.setAttribute('cx', CX); only.setAttribute('cy', CY); only.setAttribute('r', R);
       only.setAttribute('fill', nonZero[0].color);
       svg.appendChild(only);
-      var lbl = labelFor(nonZero[0], cx, cy, 0, 360, r);
+      var lbl = labelFor(nonZero[0], CX, CY, 0, 360, R);
       if (lbl) svg.appendChild(lbl);
-      return;
+    } else {
+      fullSlices.forEach(function (s, i) {
+        var start = cum[i], end = cum[i + 1];
+        if (end - start <= 0.05) return;
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', describeArc(CX, CY, R, start, end));
+        path.setAttribute('fill', s.color);
+        path.setAttribute('class', 'slice');
+        var titleEl = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        titleEl.textContent = s.name + ': ' + s.percent.toFixed(1) + '%' + (s.amountText ? ' (' + s.amountText + ')' : '');
+        path.appendChild(titleEl);
+        svg.appendChild(path);
+        var label = labelFor(s, CX, CY, start, end, R);
+        if (label) svg.appendChild(label);
+      });
     }
 
-    var angle = 0;
-    nonZero.forEach(function (s) {
-      var sliceAngle = (s.percent / 100) * 360;
-      var start = angle, end = angle + sliceAngle;
-      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', describeArc(cx, cy, r, start, end));
-      path.setAttribute('fill', s.color);
-      path.setAttribute('class', 'slice');
-      var titleEl = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-      titleEl.textContent = s.name + ': ' + s.percent.toFixed(1) + '%' + (s.amountText ? ' (' + s.amountText + ')' : '');
-      path.appendChild(titleEl);
-      svg.appendChild(path);
-      var label = labelFor(s, cx, cy, start, end, r);
-      if (label) svg.appendChild(label);
-      angle = end;
-    });
+    // Draggable boundary handles: one per category (between it and the next slice in order).
+    var catCount = state.categories.length;
+    for (var k = 1; k < fullSlices.length; k++) {
+      var leftLocked = fullSlices[k - 1].locked;
+      var rightLocked = fullSlices[k].locked || false;
+      var locked = leftLocked || rightLocked;
+      var pos = polarToCartesian(CX, CY, R, cum[k]);
+
+      var hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      hit.setAttribute('cx', pos.x); hit.setAttribute('cy', pos.y); hit.setAttribute('r', '12');
+      hit.setAttribute('class', 'handle-hit' + (locked ? ' locked' : ''));
+      hit.setAttribute('data-boundary', String(k));
+      var hTitle = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      hTitle.textContent = locked
+        ? 'Boundary locked'
+        : 'Drag to resize ' + fullSlices[k - 1].name + ' / ' + fullSlices[k].name;
+      hit.appendChild(hTitle);
+      svg.appendChild(hit);
+
+      var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', pos.x); dot.setAttribute('cy', pos.y); dot.setAttribute('r', '4');
+      dot.setAttribute('class', 'handle-dot' + (locked ? ' locked' : ''));
+      svg.appendChild(dot);
+    }
   }
+
+  // ---- Pie-slice drag-to-resize ----
+  var dragState = null;
+  var pieSvgEl = document.getElementById('pieSvg');
+
+  function svgPointFromEvent(e) {
+    var pt = pieSvgEl.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    var ctm = pieSvgEl.getScreenCTM().inverse();
+    return pt.matrixTransform(ctm);
+  }
+
+  function angleFromCenter(p) {
+    var dx = p.x - CX, dy = p.y - CY;
+    var deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    if (deg < 0) deg += 360;
+    if (deg >= 360) deg -= 360;
+    return deg;
+  }
+
+  pieSvgEl.addEventListener('pointerdown', function (e) {
+    var target = e.target.closest ? e.target.closest('.handle-hit') : null;
+    if (!target || target.classList.contains('locked')) return;
+    var k = parseInt(target.getAttribute('data-boundary'), 10);
+
+    var cum = [0];
+    var fullSlices = state.categories.concat([{ percent: unallocatedPercent() }]);
+    fullSlices.forEach(function (s) { cum.push(cum[cum.length - 1] + (s.percent / 100) * 360); });
+
+    dragState = {
+      k: k,
+      lower: cum[k - 1],
+      upper: cum[k + 1],
+      leftId: state.categories[k - 1].id,
+      rightId: k < state.categories.length ? state.categories[k].id : null
+    };
+    pieSvgEl.classList.add('dragging');
+    pieSvgEl.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  pieSvgEl.addEventListener('pointermove', function (e) {
+    if (!dragState) return;
+    e.preventDefault();
+    var angle = angleFromCenter(svgPointFromEvent(e));
+    angle = clamp(angle, dragState.lower, dragState.upper);
+
+    var leftCat = state.categories.find(function (c) { return c.id === dragState.leftId; });
+    leftCat.percent = round1((angle - dragState.lower) / 360 * 100);
+    if (dragState.rightId) {
+      var rightCat = state.categories.find(function (c) { return c.id === dragState.rightId; });
+      rightCat.percent = round1((dragState.upper - angle) / 360 * 100);
+    }
+    render();
+  });
+
+  function endDrag() {
+    if (!dragState) return;
+    dragState = null;
+    pieSvgEl.classList.remove('dragging');
+    saveState();
+  }
+  pieSvgEl.addEventListener('pointerup', endDrag);
+  pieSvgEl.addEventListener('pointercancel', endDrag);
 
   function labelFor(s, cx, cy, start, end, r) {
     if (s.percent < 6) return null;
@@ -351,7 +448,7 @@
 
     var slices = state.categories.map(function (c) {
       return {
-        id: c.id, name: c.name, percent: c.percent, color: colorVar(c.colorIndex),
+        id: c.id, name: c.name, percent: c.percent, color: colorVar(c.colorIndex), locked: c.locked,
         amountText: total > 0 ? formatMoney(total * c.percent / 100) : null
       };
     });
@@ -413,6 +510,7 @@
       var nameTd = document.createElement('td');
       var nameInput = document.createElement('input');
       nameInput.className = 'cat-name';
+      nameInput.setAttribute('data-id', c.id);
       nameInput.value = c.name;
       nameInput.addEventListener('change', function (e) { renameCategory(c.id, e.target.value || 'Category'); });
       nameTd.appendChild(nameInput);
