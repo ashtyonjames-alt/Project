@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Pie Planner</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --unallocated:    #c3c2b7;
+    --danger:         #d03b3b;
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
+    --series-5: #e87ba4; --series-6: #008300; --series-7: #4a3aa7; --series-8: #e34948;
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --unallocated:    #52514e;
+    --danger:         #e66767;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+    --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--text-primary);
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  header p { margin: 0; color: var(--text-secondary); font-size: 14px; }
+  .theme-toggle {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; cursor: pointer; white-space: nowrap;
+  }
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .total-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .total-row label { font-size: 14px; color: var(--text-secondary); }
+  .total-row input {
+    font-size: 20px; font-weight: 600; width: 200px; padding: 8px 10px;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--page); color: var(--text-primary);
+  }
+  .layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+  .chart-card { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  svg { max-width: 280px; width: 100%; height: auto; overflow: visible; }
+  .slice { stroke: var(--surface-1); stroke-width: 2; cursor: pointer; }
+  .slice-label { font-size: 11px; font-weight: 600; fill: #fff; pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
+  .legend { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .legend-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; }
+  .legend-name { flex: 1; color: var(--text-primary); }
+  .legend-val { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .summary { width: 100%; border-top: 1px solid var(--gridline); padding-top: 12px; font-size: 13px; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--text-secondary); }
+  .summary-row strong { color: var(--text-primary); }
+  .summary-row.over strong { color: var(--danger); }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left; font-size: 12px; color: var(--text-muted); font-weight: 500;
+    padding: 0 8px 8px; border-bottom: 1px solid var(--gridline);
+  }
+  tbody td { padding: 10px 8px; border-bottom: 1px solid var(--gridline); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  .cat-name {
+    width: 100%; border: none; background: transparent; color: var(--text-primary);
+    font-size: 14px; padding: 6px 4px; border-radius: 6px;
+  }
+  .cat-name:focus { background: var(--page); outline: 1px solid var(--border); }
+  .slider-cell { display: flex; align-items: center; gap: 8px; min-width: 160px; }
+  input[type="range"] { flex: 1; accent-color: var(--row-color, var(--series-1)); }
+  .pct-badge { font-size: 12px; color: var(--text-secondary); width: 42px; text-align: right; font-variant-numeric: tabular-nums; }
+  .amount-cell input {
+    width: 100px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--page); color: var(--text-primary); font-size: 13px; font-variant-numeric: tabular-nums;
+  }
+  .icon-btn {
+    border: 1px solid var(--border); background: var(--page); color: var(--text-secondary);
+    border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 14px; line-height: 1;
+  }
+  .icon-btn.locked { color: var(--text-primary); border-color: var(--text-primary); }
+  .icon-btn:hover { color: var(--text-primary); }
+  .remove-btn { color: var(--danger); border-color: var(--border); }
+  .add-row { margin-top: 14px; display: flex; gap: 8px; }
+  .add-btn {
+    border: 1px dashed var(--border); background: transparent; color: var(--text-secondary);
+    border-radius: 8px; padding: 10px 14px; font-size: 13px; cursor: pointer; width: 100%;
+  }
+  .add-btn:hover { color: var(--text-primary); border-color: var(--text-primary); }
+  .hint { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .empty-note { font-size: 13px; color: var(--text-muted); padding: 20px 0; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Budget Pie Planner</h1>
+      <p>Set a total, then slide or type each category — the rest rebalance automatically.</p>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button">Dark mode</button>
+  </header>
+
+  <div class="card">
+    <div class="total-row">
+      <label for="totalInput">Total amount</label>
+      <input id="totalInput" type="number" min="0" step="0.01" placeholder="e.g. 5000" inputmode="decimal">
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="card chart-card">
+      <svg id="pieSvg" viewBox="0 0 200 200" role="img" aria-label="Pie chart of budget category allocation"></svg>
+      <div class="legend" id="legend"></div>
+      <div class="summary" id="summary"></div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:28px"></th>
+            <th>Category</th>
+            <th>Share</th>
+            <th>Amount</th>
+            <th style="width:28px"></th>
+            <th style="width:28px"></th>
+          </tr>
+        </thead>
+        <tbody id="categoryRows"></tbody>
+      </table>
+      <div id="emptyNote" class="empty-note" style="display:none;">No categories yet — add one below.</div>
+      <div class="add-row">
+        <button class="add-btn" id="addCategoryBtn" type="button">+ Add category</button>
+      </div>
+      <p class="hint">Lock a category (🔒) to keep it fixed while others rebalance. Unallocated shows as the gray slice until it's all assigned.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var PALETTE_VARS = ['--series-1','--series-2','--series-3','--series-4','--series-5','--series-6','--series-7','--series-8'];
+  var STARTER_NAMES = ['Housing', 'Food', 'Savings'];
+
+  var state = {
+    total: 0,
+    categories: []
+  };
+
+  var nextId = 1;
+  function makeId() { return 'c' + (nextId++); }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem('budgetPiePlanner');
+      if (!raw) return false;
+      var parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.categories)) return false;
+      state = parsed;
+      parsed.categories.forEach(function (c) {
+        var n = parseInt(String(c.id).replace('c', ''), 10);
+        if (!isNaN(n) && n >= nextId) nextId = n + 1;
+      });
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function saveState() {
+    localStorage.setItem('budgetPiePlanner', JSON.stringify(state));
+  }
+
+  function seedDefaults() {
+    state.categories = STARTER_NAMES.map(function (name, i) {
+      return { id: makeId(), name: name, percent: 0, locked: false, colorIndex: i % 8 };
+    });
+  }
+
+  if (!loadState()) seedDefaults();
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  function round1(v) { return Math.round(v * 10) / 10; }
+
+  function sumPercent(list) {
+    return list.reduce(function (s, c) { return s + c.percent; }, 0);
+  }
+
+  function unallocatedPercent() {
+    return clamp(round1(100 - sumPercent(state.categories)), 0, 100);
+  }
+
+  function setPercent(id, rawNewPercent) {
+    var cat = state.categories.find(function (c) { return c.id === id; });
+    if (!cat || cat.locked) return;
+    var newPercent = clamp(rawNewPercent, 0, 100);
+    var others = state.categories.filter(function (c) { return c.id !== id; });
+    var othersSum = sumPercent(others);
+    var newSum = othersSum + newPercent;
+
+    if (newSum > 100) {
+      var excess = newSum - 100;
+      var otherUnlocked = others.filter(function (c) { return !c.locked; });
+      var otherUnlockedSum = sumPercent(otherUnlocked);
+      var takeAmount = Math.min(excess, otherUnlockedSum);
+
+      if (takeAmount > 0) {
+        var snapshot = otherUnlocked.map(function (c) { return c.percent; });
+        otherUnlocked.forEach(function (c, i) {
+          c.percent = clamp(round1(c.percent - takeAmount * (snapshot[i] / otherUnlockedSum)), 0, 100);
+        });
+      }
+      var shortfall = excess - takeAmount;
+      if (shortfall > 0) newPercent = clamp(round1(newPercent - shortfall), 0, 100);
+    }
+
+    cat.percent = round1(newPercent);
+    render();
+    saveState();
+  }
+
+  function setAmount(id, amount) {
+    if (!state.total || state.total <= 0) return;
+    setPercent(id, (amount / state.total) * 100);
+  }
+
+  function addCategory() {
+    var idx = state.categories.length % 8;
+    state.categories.push({ id: makeId(), name: 'New category', percent: 0, locked: false, colorIndex: idx });
+    render();
+    saveState();
+  }
+
+  function removeCategory(id) {
+    state.categories = state.categories.filter(function (c) { return c.id !== id; });
+    render();
+    saveState();
+  }
+
+  function toggleLock(id) {
+    var cat = state.categories.find(function (c) { return c.id === id; });
+    if (cat) cat.locked = !cat.locked;
+    render();
+    saveState();
+  }
+
+  function renameCategory(id, name) {
+    var cat = state.categories.find(function (c) { return c.id === id; });
+    if (cat) cat.name = name;
+    saveState();
+  }
+
+  // ---- SVG pie chart ----
+  function polarToCartesian(cx, cy, r, angleDeg) {
+    var rad = (angleDeg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  function describeArc(cx, cy, r, startAngle, endAngle) {
+    var start = polarToCartesian(cx, cy, r, endAngle);
+    var end = polarToCartesian(cx, cy, r, startAngle);
+    var largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+    return ['M', cx, cy, 'L', start.x, start.y, 'A', r, r, 0, largeArcFlag, 0, end.x, end.y, 'Z'].join(' ');
+  }
+
+  function colorVar(idx) { return 'var(' + PALETTE_VARS[idx % 8] + ')'; }
+
+  function renderChart(slices) {
+    var svg = document.getElementById('pieSvg');
+    svg.innerHTML = '';
+    var cx = 100, cy = 100, r = 96;
+    var nonZero = slices.filter(function (s) { return s.percent > 0.05; });
+
+    if (nonZero.length === 0) {
+      var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+      circle.setAttribute('fill', 'var(--unallocated)');
+      svg.appendChild(circle);
+      return;
+    }
+
+    if (nonZero.length === 1 && nonZero[0].percent >= 99.9) {
+      var only = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      only.setAttribute('cx', cx); only.setAttribute('cy', cy); only.setAttribute('r', r);
+      only.setAttribute('fill', nonZero[0].color);
+      svg.appendChild(only);
+      var lbl = labelFor(nonZero[0], cx, cy, 0, 360, r);
+      if (lbl) svg.appendChild(lbl);
+      return;
+    }
+
+    var angle = 0;
+    nonZero.forEach(function (s) {
+      var sliceAngle = (s.percent / 100) * 360;
+      var start = angle, end = angle + sliceAngle;
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', describeArc(cx, cy, r, start, end));
+      path.setAttribute('fill', s.color);
+      path.setAttribute('class', 'slice');
+      var titleEl = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      titleEl.textContent = s.name + ': ' + s.percent.toFixed(1) + '%' + (s.amountText ? ' (' + s.amountText + ')' : '');
+      path.appendChild(titleEl);
+      svg.appendChild(path);
+      var label = labelFor(s, cx, cy, start, end, r);
+      if (label) svg.appendChild(label);
+      angle = end;
+    });
+  }
+
+  function labelFor(s, cx, cy, start, end, r) {
+    if (s.percent < 6) return null;
+    var mid = start + (end - start) / 2;
+    var pos = polarToCartesian(cx, cy, r * 0.62, mid);
+    var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', pos.x);
+    text.setAttribute('y', pos.y);
+    text.setAttribute('class', 'slice-label');
+    text.textContent = Math.round(s.percent) + '%';
+    return text;
+  }
+
+  function formatMoney(v) {
+    return '$' + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function render() {
+    var total = state.total || 0;
+    var unallocated = unallocatedPercent();
+
+    var slices = state.categories.map(function (c) {
+      return {
+        id: c.id, name: c.name, percent: c.percent, color: colorVar(c.colorIndex),
+        amountText: total > 0 ? formatMoney(total * c.percent / 100) : null
+      };
+    });
+    slices.push({
+      id: 'unallocated', name: 'Unallocated', percent: unallocated, color: 'var(--unallocated)',
+      amountText: total > 0 ? formatMoney(total * unallocated / 100) : null
+    });
+
+    renderChart(slices);
+
+    var legend = document.getElementById('legend');
+    legend.innerHTML = '';
+    slices.forEach(function (s) {
+      if (s.percent <= 0.05 && s.id !== 'unallocated') return;
+      if (s.id === 'unallocated' && s.percent <= 0.05) return;
+      var row = document.createElement('div');
+      row.className = 'legend-row';
+      var sw = document.createElement('span');
+      sw.className = 'swatch';
+      sw.style.background = s.color;
+      var name = document.createElement('span');
+      name.className = 'legend-name';
+      name.textContent = s.name;
+      var val = document.createElement('span');
+      val.className = 'legend-val';
+      val.textContent = s.percent.toFixed(1) + '%' + (s.amountText ? '  ·  ' + s.amountText : '');
+      row.appendChild(sw); row.appendChild(name); row.appendChild(val);
+      legend.appendChild(row);
+    });
+
+    var over = sumPercent(state.categories) > 100.05;
+    var summary = document.getElementById('summary');
+    var allocatedPct = round1(sumPercent(state.categories));
+    summary.innerHTML =
+      '<div class="summary-row"><span>Allocated</span><strong>' + allocatedPct.toFixed(1) + '%' +
+        (total > 0 ? '  ·  ' + formatMoney(total * allocatedPct / 100) : '') + '</strong></div>' +
+      '<div class="summary-row' + (over ? ' over' : '') + '"><span>Unallocated</span><strong>' + unallocated.toFixed(1) + '%' +
+        (total > 0 ? '  ·  ' + formatMoney(total * unallocated / 100) : '') + '</strong></div>';
+
+    renderTable();
+  }
+
+  function renderTable() {
+    var tbody = document.getElementById('categoryRows');
+    tbody.innerHTML = '';
+    document.getElementById('emptyNote').style.display = state.categories.length === 0 ? 'block' : 'none';
+
+    state.categories.forEach(function (c) {
+      var tr = document.createElement('tr');
+      tr.style.setProperty('--row-color', colorVar(c.colorIndex));
+
+      var swatchTd = document.createElement('td');
+      var sw = document.createElement('span');
+      sw.className = 'swatch';
+      sw.style.background = colorVar(c.colorIndex);
+      sw.style.display = 'inline-block';
+      swatchTd.appendChild(sw);
+
+      var nameTd = document.createElement('td');
+      var nameInput = document.createElement('input');
+      nameInput.className = 'cat-name';
+      nameInput.value = c.name;
+      nameInput.addEventListener('change', function (e) { renameCategory(c.id, e.target.value || 'Category'); });
+      nameTd.appendChild(nameInput);
+
+      var sliderTd = document.createElement('td');
+      var sliderCell = document.createElement('div');
+      sliderCell.className = 'slider-cell';
+      var slider = document.createElement('input');
+      slider.type = 'range'; slider.min = '0'; slider.max = '100'; slider.step = '1';
+      slider.value = String(Math.round(c.percent));
+      slider.disabled = c.locked;
+      slider.addEventListener('input', function (e) { setPercent(c.id, parseFloat(e.target.value)); });
+      var pctBadge = document.createElement('span');
+      pctBadge.className = 'pct-badge';
+      pctBadge.textContent = c.percent.toFixed(1) + '%';
+      sliderCell.appendChild(slider); sliderCell.appendChild(pctBadge);
+      sliderTd.appendChild(sliderCell);
+
+      var amountTd = document.createElement('td');
+      amountTd.className = 'amount-cell';
+      var amountInput = document.createElement('input');
+      amountInput.type = 'number'; amountInput.min = '0'; amountInput.step = '0.01';
+      amountInput.disabled = c.locked || !(state.total > 0);
+      amountInput.placeholder = state.total > 0 ? '0.00' : 'set total';
+      amountInput.value = state.total > 0 ? (Math.round(state.total * c.percent / 100 * 100) / 100) : '';
+      amountInput.addEventListener('change', function (e) {
+        var v = parseFloat(e.target.value);
+        if (!isNaN(v)) setAmount(c.id, v);
+      });
+      amountTd.appendChild(amountInput);
+
+      var lockTd = document.createElement('td');
+      var lockBtn = document.createElement('button');
+      lockBtn.type = 'button';
+      lockBtn.className = 'icon-btn' + (c.locked ? ' locked' : '');
+      lockBtn.title = c.locked ? 'Unlock category' : 'Lock category';
+      lockBtn.textContent = c.locked ? '🔒' : '🔓';
+      lockBtn.addEventListener('click', function () { toggleLock(c.id); });
+      lockTd.appendChild(lockBtn);
+
+      var removeTd = document.createElement('td');
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'icon-btn remove-btn';
+      removeBtn.title = 'Remove category';
+      removeBtn.textContent = '✕';
+      removeBtn.addEventListener('click', function () { removeCategory(c.id); });
+      removeTd.appendChild(removeBtn);
+
+      tr.appendChild(swatchTd); tr.appendChild(nameTd); tr.appendChild(sliderTd);
+      tr.appendChild(amountTd); tr.appendChild(lockTd); tr.appendChild(removeTd);
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById('totalInput').addEventListener('input', function (e) {
+    var v = parseFloat(e.target.value);
+    state.total = isNaN(v) ? 0 : v;
+    render();
+    saveState();
+  });
+  if (state.total) document.getElementById('totalInput').value = state.total;
+
+  document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
+
+  var themeToggle = document.getElementById('themeToggle');
+  function applyTheme(mode) {
+    document.documentElement.setAttribute('data-theme', mode);
+    themeToggle.textContent = mode === 'dark' ? 'Light mode' : 'Dark mode';
+    localStorage.setItem('budgetPiePlannerTheme', mode);
+  }
+  var savedTheme = localStorage.getItem('budgetPiePlannerTheme') ||
+    (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(savedTheme);
+  themeToggle.addEventListener('click', function () {
+    applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
