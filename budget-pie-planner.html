@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Budget Pie Planner</title>
+<title>Pie Share Planner</title>
 <style>
   :root {
     color-scheme: light;
@@ -62,6 +62,11 @@
   .total-row input {
     font-size: 20px; font-weight: 600; width: 200px; padding: 8px 10px;
     border: 1px solid var(--border); border-radius: 8px; background: var(--page); color: var(--text-primary);
+  }
+  .format-label { margin-left: 8px; }
+  #formatSelect {
+    font-size: 13px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--page); color: var(--text-primary);
   }
   .layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
   @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
@@ -123,8 +128,8 @@
 <div class="wrap">
   <header>
     <div>
-      <h1>Budget Pie Planner</h1>
-      <p>Set a total, then slide or type each category — the rest rebalance automatically.</p>
+      <h1>Pie Share Planner</h1>
+      <p>Set a total — money, hours, points, anything — then slide or type each category. The rest rebalance automatically.</p>
     </div>
     <button class="theme-toggle" id="themeToggle" type="button">Dark mode</button>
   </header>
@@ -133,12 +138,17 @@
     <div class="total-row">
       <label for="totalInput">Total amount</label>
       <input id="totalInput" type="number" min="0" step="0.01" placeholder="e.g. 5000" inputmode="decimal">
+      <label for="formatSelect" class="format-label">Format</label>
+      <select id="formatSelect">
+        <option value="currency">Currency ($)</option>
+        <option value="number">Plain number</option>
+      </select>
     </div>
   </div>
 
   <div class="layout">
     <div class="card chart-card">
-      <svg id="pieSvg" viewBox="0 0 200 200" role="img" aria-label="Pie chart of budget category allocation"></svg>
+      <svg id="pieSvg" viewBox="0 0 200 200" role="img" aria-label="Pie chart of category allocation"></svg>
       <div class="legend" id="legend"></div>
       <div class="summary" id="summary"></div>
     </div>
@@ -173,6 +183,7 @@
 
   var state = {
     total: 0,
+    format: 'currency',
     categories: []
   };
 
@@ -205,6 +216,7 @@
   }
 
   if (!loadState()) seedDefaults();
+  if (state.format !== 'currency' && state.format !== 'number') state.format = 'currency';
 
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   function round1(v) { return Math.round(v * 10) / 10; }
@@ -438,7 +450,10 @@
     return text;
   }
 
-  function formatMoney(v) {
+  function formatValue(v) {
+    if (state.format === 'number') {
+      return v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
     return '$' + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
@@ -449,12 +464,12 @@
     var slices = state.categories.map(function (c) {
       return {
         id: c.id, name: c.name, percent: c.percent, color: colorVar(c.colorIndex), locked: c.locked,
-        amountText: total > 0 ? formatMoney(total * c.percent / 100) : null
+        amountText: total > 0 ? formatValue(total * c.percent / 100) : null
       };
     });
     slices.push({
       id: 'unallocated', name: 'Unallocated', percent: unallocated, color: 'var(--unallocated)',
-      amountText: total > 0 ? formatMoney(total * unallocated / 100) : null
+      amountText: total > 0 ? formatValue(total * unallocated / 100) : null
     });
 
     renderChart(slices);
@@ -484,9 +499,9 @@
     var allocatedPct = round1(sumPercent(state.categories));
     summary.innerHTML =
       '<div class="summary-row"><span>Allocated</span><strong>' + allocatedPct.toFixed(1) + '%' +
-        (total > 0 ? '  ·  ' + formatMoney(total * allocatedPct / 100) : '') + '</strong></div>' +
+        (total > 0 ? '  ·  ' + formatValue(total * allocatedPct / 100) : '') + '</strong></div>' +
       '<div class="summary-row' + (over ? ' over' : '') + '"><span>Unallocated</span><strong>' + unallocated.toFixed(1) + '%' +
-        (total > 0 ? '  ·  ' + formatMoney(total * unallocated / 100) : '') + '</strong></div>';
+        (total > 0 ? '  ·  ' + formatValue(total * unallocated / 100) : '') + '</strong></div>';
 
     renderTable();
   }
@@ -573,6 +588,14 @@
     saveState();
   });
   if (state.total) document.getElementById('totalInput').value = state.total;
+
+  var formatSelect = document.getElementById('formatSelect');
+  formatSelect.value = state.format;
+  formatSelect.addEventListener('change', function (e) {
+    state.format = e.target.value;
+    render();
+    saveState();
+  });
 
   document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
 
