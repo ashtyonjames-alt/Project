@@ -22,6 +22,23 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const dist = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
 
+  // Rotation helpers (house/flat blocks only - towers are rotation-invariant).
+  // A positive angle rotates local +X toward local +Y; since 2D world-y maps
+  // directly to 3D world-z everywhere in this app (no axis flip), the same
+  // angle is used unchanged for screen-space canvas rotation, and negated
+  // for Three.js's rotation.y (which rotates +X toward -Z for positive angles).
+  function rotatePoint(p, angle) {
+    const c = Math.cos(angle), s = Math.sin(angle);
+    return { x: p.x * c - p.y * s, y: p.x * s + p.y * c };
+  }
+  function worldToLocal(b, worldPt) {
+    return rotatePoint({ x: worldPt.x - b.x, y: worldPt.y - b.y }, -(b.rotation || 0));
+  }
+  function localToWorld(b, localPt) {
+    const r = rotatePoint(localPt, b.rotation || 0);
+    return { x: b.x + r.x, y: b.y + r.y };
+  }
+
   // ---------------------------------------------------------------------
   // State
   // ---------------------------------------------------------------------
@@ -70,6 +87,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   const fabPlus = document.getElementById('fab-plus');
   const fabFloors = document.getElementById('fab-floors');
   const fabColors = document.getElementById('fab-colors');
+  const fabRotate = document.getElementById('fab-rotate');
   const fabDelete = document.getElementById('fab-delete');
   const btnUndo = document.getElementById('btn-undo');
   const btnClear = document.getElementById('btn-clear');
@@ -98,12 +116,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function screenToWorld(p) { return { x: (p.x - yardW / 2) / PX_PER_UNIT, y: (p.y - yardH / 2) / PX_PER_UNIT }; }
 
   function blockScreenRect(b) {
-    if (b.type === 'tower') {
-      const c = worldToScreen({ x: b.x, y: b.y });
-      return { cx: c.x, cy: c.y, r: b.r * PX_PER_UNIT };
-    }
     const c = worldToScreen({ x: b.x, y: b.y });
-    return { x0: c.x - (b.w * PX_PER_UNIT) / 2, y0: c.y - (b.h * PX_PER_UNIT) / 2, w: b.w * PX_PER_UNIT, h: b.h * PX_PER_UNIT };
+    if (b.type === 'tower') return { cx: c.x, cy: c.y, r: b.r * PX_PER_UNIT };
+    return { cx: c.x, cy: c.y, w: b.w * PX_PER_UNIT, h: b.h * PX_PER_UNIT, rotation: b.rotation || 0 };
   }
 
   // ---------------------------------------------------------------------
@@ -137,10 +152,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       ctx.strokeStyle = selected ? '#223047' : 'rgba(0,0,0,0.25)';
       ctx.stroke();
       if (selected) drawHandle(cx + r, cy);
+      if (b.floors > 1) drawFloorBadge(cx, cy - r - 12, b.floors);
     } else {
-      const { x0, y0, w, h } = blockScreenRect(b);
+      const { cx, cy, w, h, rotation } = blockScreenRect(b);
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
       const rad = 10;
-      roundRect(ctx, x0, y0, w, h, rad);
+      roundRect(ctx, -w / 2, -h / 2, w, h, rad);
       ctx.fillStyle = b.color; ctx.fill();
       ctx.lineWidth = selected ? 4 : 2.5;
       ctx.strokeStyle = selected ? '#223047' : 'rgba(0,0,0,0.25)';
@@ -148,20 +166,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (b.type === 'house') {
         ctx.strokeStyle = 'rgba(0,0,0,0.3)';
         ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(x0 + w / 2, y0); ctx.lineTo(x0 + w / 2, y0 + h); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, -h / 2); ctx.lineTo(0, h / 2); ctx.stroke();
       }
-      if (selected) drawHandle(x0 + w, y0 + h);
-    }
-    if (b.floors > 1) {
-      const c = worldToScreen({ x: b.x, y: b.y });
-      const badgeX = b.type === 'tower' ? c.x : blockScreenRect(b).x0 + 14;
-      const badgeY = b.type === 'tower' ? c.y - b.r * PX_PER_UNIT - 12 : blockScreenRect(b).y0 + 14;
-      ctx.beginPath(); ctx.arc(badgeX, badgeY, 12, 0, Math.PI * 2);
-      ctx.fillStyle = '#223047'; ctx.fill();
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('x' + b.floors, badgeX, badgeY + 1);
+      if (selected) drawHandle(w / 2, h / 2);
+      if (b.floors > 1) drawFloorBadge(-w / 2 + 14, -h / 2 + 14, b.floors);
     }
     ctx.restore();
+  }
+
+  function drawFloorBadge(x, y, floors) {
+    const ctx = yardCtx;
+    ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#223047'; ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('x' + floors, x, y + 1);
   }
 
   function drawHandle(x, y) {
@@ -189,12 +207,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       return { x: host.x + Math.cos(ang) * host.r, y: host.y + Math.sin(ang) * host.r, normal: ang };
     }
     const hw = host.w / 2, hh = host.h / 2;
-    let x, y, normal;
-    if (a.side === 'N') { x = host.x - hw + a.t * host.w; y = host.y - hh; normal = -Math.PI / 2; }
-    else if (a.side === 'S') { x = host.x - hw + a.t * host.w; y = host.y + hh; normal = Math.PI / 2; }
-    else if (a.side === 'W') { x = host.x - hw; y = host.y - hh + a.t * host.h; normal = Math.PI; }
-    else { x = host.x + hw; y = host.y - hh + a.t * host.h; normal = 0; }
-    return { x, y, normal };
+    let lx, ly, localNormal;
+    if (a.side === 'N') { lx = -hw + a.t * host.w; ly = -hh; localNormal = -Math.PI / 2; }
+    else if (a.side === 'S') { lx = -hw + a.t * host.w; ly = hh; localNormal = Math.PI / 2; }
+    else if (a.side === 'W') { lx = -hw; ly = -hh + a.t * host.h; localNormal = Math.PI; }
+    else { lx = hw; ly = -hh + a.t * host.h; localNormal = 0; }
+    const world = localToWorld(host, { x: lx, y: ly });
+    return { x: world.x, y: world.y, normal: localNormal + (host.rotation || 0) };
   }
 
   function drawAttachment2D(a) {
@@ -214,14 +233,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // Hit testing (2D)
   // ---------------------------------------------------------------------
   function hitBlock(screenPt) {
+    const worldPt = screenToWorld(screenPt);
     for (let i = state.blocks.length - 1; i >= 0; i--) {
       const b = state.blocks[i];
       if (b.type === 'tower') {
-        const { cx, cy, r } = blockScreenRect(b);
-        if (dist(screenPt, { x: cx, y: cy }) <= r) return b;
+        if (dist(worldPt, { x: b.x, y: b.y }) <= b.r) return b;
       } else {
-        const { x0, y0, w, h } = blockScreenRect(b);
-        if (screenPt.x >= x0 && screenPt.x <= x0 + w && screenPt.y >= y0 && screenPt.y <= y0 + h) return b;
+        const local = worldToLocal(b, worldPt);
+        if (Math.abs(local.x) <= b.w / 2 && Math.abs(local.y) <= b.h / 2) return b;
       }
     }
     return null;
@@ -230,10 +249,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function hitHandle(screenPt) {
     const b = findBlock(state.selectedId);
     if (!b || state.selectedKind !== 'block') return false;
-    let hx, hy;
-    if (b.type === 'tower') { const r = blockScreenRect(b); hx = r.cx + r.r; hy = r.cy; }
-    else { const r = blockScreenRect(b); hx = r.x0 + r.w; hy = r.y0 + r.h; }
-    return dist(screenPt, { x: hx, y: hy }) <= 18;
+    let handleWorld;
+    if (b.type === 'tower') handleWorld = { x: b.x + b.r, y: b.y };
+    else handleWorld = localToWorld(b, { x: b.w / 2, y: b.h / 2 });
+    return dist(screenPt, worldToScreen(handleWorld)) <= 18;
   }
 
   function findNearestEdgeForAttachment(worldPt) {
@@ -246,12 +265,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           best = { d, hostId: b.id, angle };
         }
       } else {
+        const local = worldToLocal(b, worldPt);
         const hw = b.w / 2, hh = b.h / 2;
         const candidates = [
-          { side: 'N', d: Math.abs(worldPt.y - (b.y - hh)), inRange: worldPt.x >= b.x - hw - 0.3 && worldPt.x <= b.x + hw + 0.3, t: clamp((worldPt.x - (b.x - hw)) / b.w, 0, 1) },
-          { side: 'S', d: Math.abs(worldPt.y - (b.y + hh)), inRange: worldPt.x >= b.x - hw - 0.3 && worldPt.x <= b.x + hw + 0.3, t: clamp((worldPt.x - (b.x - hw)) / b.w, 0, 1) },
-          { side: 'W', d: Math.abs(worldPt.x - (b.x - hw)), inRange: worldPt.y >= b.y - hh - 0.3 && worldPt.y <= b.y + hh + 0.3, t: clamp((worldPt.y - (b.y - hh)) / b.h, 0, 1) },
-          { side: 'E', d: Math.abs(worldPt.x - (b.x + hw)), inRange: worldPt.y >= b.y - hh - 0.3 && worldPt.y <= b.y + hh + 0.3, t: clamp((worldPt.y - (b.y - hh)) / b.h, 0, 1) },
+          { side: 'N', d: Math.abs(local.y - -hh), inRange: local.x >= -hw - 0.3 && local.x <= hw + 0.3, t: clamp((local.x + hw) / b.w, 0, 1) },
+          { side: 'S', d: Math.abs(local.y - hh), inRange: local.x >= -hw - 0.3 && local.x <= hw + 0.3, t: clamp((local.x + hw) / b.w, 0, 1) },
+          { side: 'W', d: Math.abs(local.x - -hw), inRange: local.y >= -hh - 0.3 && local.y <= hh + 0.3, t: clamp((local.y + hh) / b.h, 0, 1) },
+          { side: 'E', d: Math.abs(local.x - hw), inRange: local.y >= -hh - 0.3 && local.y <= hh + 0.3, t: clamp((local.y + hh) / b.h, 0, 1) },
         ];
         for (const c of candidates) {
           if (c.inRange && c.d < 0.6 && (!best || c.d < best.d)) best = { d: c.d, hostId: b.id, side: c.side, t: c.t };
@@ -317,7 +337,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         }
       } else {
         const d = DEFAULTS[state.armedType];
-        const block = Object.assign({ id: newId(), type: state.armedType, x: worldPt.x, y: worldPt.y, floors: 1 }, d);
+        const block = Object.assign({ id: newId(), type: state.armedType, x: worldPt.x, y: worldPt.y, floors: 1, rotation: 0 }, d);
         pushHistory();
         state.blocks.push(block);
         state.selectedId = block.id;
@@ -364,9 +384,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (b.type === 'tower') {
         b.r = Math.max(MIN_SIZE / 2, dist({ x: b.x, y: b.y }, worldPt));
       } else {
-        // resize from the fixed center toward the dragged corner
-        b.w = Math.max(MIN_SIZE, Math.abs(worldPt.x - b.x) * 2);
-        b.h = Math.max(MIN_SIZE, Math.abs(worldPt.y - b.y) * 2);
+        // resize from the fixed center toward the dragged corner, in the block's own (possibly rotated) frame
+        const local = worldToLocal(b, worldPt);
+        b.w = Math.max(MIN_SIZE, Math.abs(local.x) * 2);
+        b.h = Math.max(MIN_SIZE, Math.abs(local.y) * 2);
       }
     }
     render2D();
@@ -394,14 +415,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     floatingToolbar.hidden = false;
     fabFloors.textContent = b.floors + (b.floors === 1 ? ' floor' : ' floors');
     Array.from(fabColors.children).forEach((dot) => dot.classList.toggle('selected', dot.dataset.color.toLowerCase() === b.color.toLowerCase()));
+    fabRotate.hidden = b.type === 'tower';
 
     let top, left;
+    const r = blockScreenRect(b);
     if (b.type === 'tower') {
-      const r = blockScreenRect(b);
       left = r.cx; top = r.cy - r.r - 60;
     } else {
-      const r = blockScreenRect(b);
-      left = r.x0 + r.w / 2; top = r.y0 - 60;
+      const topLocal = { x: 0, y: -b.h / 2 };
+      const topWorld = localToWorld(b, topLocal);
+      const topScreen = worldToScreen(topWorld);
+      left = topScreen.x; top = topScreen.y - 60;
     }
     top = clamp(top, 8, yardH - 8);
     left = clamp(left, 90, yardW - 90);
@@ -421,6 +445,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     const dot = evt.target.closest('.color-dot'); if (!dot) return;
     const b = findBlock(state.selectedId); if (!b) return;
     pushHistory(); b.color = dot.dataset.color; syncAll();
+  });
+  fabRotate.addEventListener('click', () => {
+    const b = findBlock(state.selectedId); if (!b || b.type === 'tower') return;
+    pushHistory();
+    b.rotation = ((b.rotation || 0) + Math.PI / 2) % (Math.PI * 2);
+    syncAll();
   });
   fabDelete.addEventListener('click', () => {
     if (!state.selectedId) return;
@@ -485,6 +515,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   function disposeGroup(group) {
     group.children.slice().forEach((child) => {
+      if (child.children && child.children.length) disposeGroup(child);
       if (child.geometry) child.geometry.dispose();
       if (child.material) {
         if (Array.isArray(child.material)) child.material.forEach((m) => m.dispose());
@@ -503,56 +534,129 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   function render3D() {
     disposeGroup(contentGroup);
-    for (const b of state.blocks) contentGroup.add(...buildBlockMeshes(b));
+    for (const b of state.blocks) contentGroup.add(buildBlockMeshes(b));
     for (const a of state.attachments) {
       const mesh = buildAttachmentMesh(a);
       if (mesh) contentGroup.add(mesh);
     }
   }
 
+  const WALL_THICKNESS = 0.15;
+  const OPENING_SIZE = {
+    door: { w: 0.9, h: 2.0, sill: 0 },
+    window: { w: 1.1, h: 1.0, sill: 1.0 },
+  };
+
+  // A flat rectangular wall panel (length x height x thickness) with real
+  // rectangular holes cut for each opening, via THREE.Shape holes rather
+  // than a boolean/CSG subtraction (no CSG library needed for axis-aligned
+  // rectangular cuts in a flat panel).
+  function wallPanel(length, height, openings, color) {
+    const shape = new THREE.Shape();
+    shape.moveTo(-length / 2, 0);
+    shape.lineTo(length / 2, 0);
+    shape.lineTo(length / 2, height);
+    shape.lineTo(-length / 2, height);
+    shape.lineTo(-length / 2, 0);
+
+    const margin = 0.08;
+    for (const o of openings) {
+      const halfW = Math.min(o.w / 2, length / 2 - margin);
+      let x0 = o.t * length - length / 2 - halfW;
+      let x1 = x0 + halfW * 2;
+      if (x0 < -length / 2 + margin) { const s = -length / 2 + margin - x0; x0 += s; x1 += s; }
+      if (x1 > length / 2 - margin) { const s = x1 - (length / 2 - margin); x0 -= s; x1 -= s; }
+      const y0 = Math.max(0.02, o.sill), y1 = Math.min(height - 0.02, o.sill + o.h);
+      if (x1 - x0 < 0.1 || y1 - y0 < 0.1) continue;
+      const hole = new THREE.Path();
+      hole.moveTo(x0, y0); hole.lineTo(x1, y0); hole.lineTo(x1, y1); hole.lineTo(x0, y1); hole.lineTo(x0, y0);
+      shape.holes.push(hole);
+    }
+
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: WALL_THICKNESS, bevelEnabled: false });
+    geo.translate(0, 0, -WALL_THICKNESS / 2);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color }));
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    return mesh;
+  }
+
+  function openingsForHost(hostId, w, h) {
+    const bySide = { N: [], S: [], W: [], E: [] };
+    for (const a of state.attachments) {
+      if (a.hostId !== hostId || !a.side) continue;
+      const size = OPENING_SIZE[a.kind];
+      bySide[a.side].push({ t: a.t, w: size.w, h: size.h, sill: size.sill });
+    }
+    return bySide;
+  }
+
+  // Builds a block's 4 walls (each with real holes for its doors/windows)
+  // plus roof/cap, all positioned in the block's own local (unrotated)
+  // frame, wrapped in a group that carries the block's world position and
+  // rotation - see the rotation helpers above for the sign convention.
   function buildBlockMeshes(b) {
-    const meshes = [];
+    const group = new THREE.Group();
     const totalH = b.floors * FLOOR_HEIGHT;
+
     if (b.type === 'tower') {
       const body = new THREE.Mesh(new THREE.CylinderGeometry(b.r, b.r, totalH, 24), new THREE.MeshStandardMaterial({ color: b.color }));
-      body.position.set(b.x, totalH / 2, b.y);
+      body.position.y = totalH / 2;
       body.castShadow = true; body.receiveShadow = true;
       const roofH = b.r * 1.6;
       const roof = new THREE.Mesh(new THREE.ConeGeometry(b.r * 1.15, roofH, 24), new THREE.MeshStandardMaterial({ color: 0x7a3b5e }));
-      roof.position.set(b.x, totalH + roofH / 2, b.y);
+      roof.position.y = totalH + roofH / 2;
       roof.castShadow = true;
-      meshes.push(body, roof);
-    } else if (b.type === 'flat') {
-      const body = box(b.w, totalH, b.h, b.color);
-      body.position.set(b.x, totalH / 2, b.y);
-      const cap = box(b.w * 1.04, 0.15, b.h * 1.04, 0xffffff, { opacity: 0.9, transparent: true });
-      cap.position.set(b.x, totalH + 0.08, b.y);
-      meshes.push(body, cap);
-    } else { // house
-      const body = box(b.w, totalH, b.h, b.color);
-      body.position.set(b.x, totalH / 2, b.y);
-      const roofH = Math.max(b.w, b.h) * 0.45;
-      const roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(b.w, b.h) * 0.72, roofH, 4), new THREE.MeshStandardMaterial({ color: 0xb3462c }));
-      roof.rotation.y = Math.PI / 4;
-      roof.scale.set(b.w / Math.max(b.w, b.h), 1, b.h / Math.max(b.w, b.h));
-      roof.position.set(b.x, totalH + roofH / 2, b.y);
-      roof.castShadow = true;
-      meshes.push(body, roof);
+      group.add(body, roof);
+    } else {
+      const w = b.w, h = b.h;
+      const openings = openingsForHost(b.id, w, h);
+      const nWall = wallPanel(w, totalH, openings.N, b.color);
+      nWall.position.set(0, 0, -h / 2);
+      const sWall = wallPanel(w, totalH, openings.S, b.color);
+      sWall.position.set(0, 0, h / 2);
+      const wWall = wallPanel(h, totalH, openings.W, b.color);
+      wWall.rotation.y = -Math.PI / 2;
+      wWall.position.set(-w / 2, 0, 0);
+      const eWall = wallPanel(h, totalH, openings.E, b.color);
+      eWall.rotation.y = -Math.PI / 2;
+      eWall.position.set(w / 2, 0, 0);
+      group.add(nWall, sWall, wWall, eWall);
+
+      if (b.type === 'flat') {
+        const cap = box(w * 1.04, 0.15, h * 1.04, 0xffffff, { opacity: 0.9, transparent: true });
+        cap.position.y = totalH + 0.08;
+        group.add(cap);
+      } else { // house
+        const roofH = Math.max(w, h) * 0.45;
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, h) * 0.72, roofH, 4), new THREE.MeshStandardMaterial({ color: 0xb3462c }));
+        roof.rotation.y = Math.PI / 4;
+        roof.scale.set(w / Math.max(w, h), 1, h / Math.max(w, h));
+        roof.position.y = totalH + roofH / 2;
+        roof.castShadow = true;
+        group.add(roof);
+      }
     }
-    return meshes;
+
+    group.position.set(b.x, 0, b.y);
+    group.rotation.y = -(b.rotation || 0);
+    return group;
   }
 
+  // Towers don't get real cutout geometry (curved-wall holes need more than
+  // a flat Shape+holes trick); their doors/windows stay a decorative overlay
+  // flush against the cylinder surface.
   function buildAttachmentMesh(a) {
     const host = findBlock(a.hostId);
+    if (!host || host.type !== 'tower') return null;
     const pos = attachmentWorldPos(a);
-    if (!host || !pos) return null;
+    if (!pos) return null;
     const isDoor = a.kind === 'door';
-    const w = isDoor ? 0.9 : 1.1, h = isDoor ? 2.0 : 1.0;
-    const yCenter = isDoor ? h / 2 : FLOOR_HEIGHT * 0.55;
+    const size = OPENING_SIZE[a.kind];
+    const yCenter = isDoor ? size.h / 2 : size.sill + size.h / 2;
     const mat = new THREE.MeshStandardMaterial(isDoor
       ? { color: 0x8b5e34 }
       : { color: 0x93c5fd, transparent: true, opacity: 0.85 });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.12), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(size.w, size.h, 0.12), mat);
     mesh.position.set(pos.x, yCenter, pos.y);
     mesh.rotation.y = -pos.normal;
     mesh.castShadow = true;

@@ -196,6 +196,8 @@ html, body {
   transform: translate(-50%, 0);
 }
 
+.fab[hidden] { display: none; }
+
 .fab {
   width: 40px;
   height: 40px;
