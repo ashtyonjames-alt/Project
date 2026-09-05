@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Build! Simple House Builder</title>
+<link rel="stylesheet" href="css/styles.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./js/vendor/three/three.module.js",
+    "three/addons/": "./js/vendor/three/addons/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+
+  <header id="topbar">
+    <span class="brand">🏠 Build!</span>
+    <a class="switch-link" href="../architect-mapper/index.html">Precision mode →</a>
+    <div class="top-actions">
+      <button id="btn-undo" class="big-btn" title="Undo">↩️ Undo</button>
+      <button id="btn-clear" class="big-btn danger" title="Clear everything">🗑️ Clear</button>
+    </div>
+  </header>
+
+  <div id="main">
+
+    <!-- PALETTE -->
+    <aside id="palette">
+      <div class="palette-label">Drag onto the yard</div>
+      <div class="palette-items">
+        <div class="palette-item" data-type="house" draggable="false">
+          <div class="palette-icon house-icon">🏠</div>
+          <span>House</span>
+        </div>
+        <div class="palette-item" data-type="flat" draggable="false">
+          <div class="palette-icon flat-icon">🧱</div>
+          <span>Block</span>
+        </div>
+        <div class="palette-item" data-type="tower" draggable="false">
+          <div class="palette-icon tower-icon">🗼</div>
+          <span>Tower</span>
+        </div>
+        <div class="palette-item" data-type="door" draggable="false">
+          <div class="palette-icon door-icon">🚪</div>
+          <span>Door</span>
+        </div>
+        <div class="palette-item" data-type="window" draggable="false">
+          <div class="palette-icon window-icon">🪟</div>
+          <span>Window</span>
+        </div>
+      </div>
+      <div class="palette-hint">Tap a shape, then tap the yard to drop it!</div>
+    </aside>
+
+    <!-- 2D YARD (top-down drag/drop canvas) -->
+    <section id="yard-wrap">
+      <div class="view-title">Your Yard (top view)</div>
+      <canvas id="yard-canvas"></canvas>
+      <div id="ghost" class="ghost" hidden></div>
+      <div id="floating-toolbar" class="floating-toolbar" hidden>
+        <button class="fab" id="fab-minus" title="Fewer floors">−</button>
+        <span id="fab-floors">1 floor</span>
+        <button class="fab" id="fab-plus" title="More floors">+</button>
+        <span class="fab-colors" id="fab-colors"></span>
+        <button class="fab fab-delete" id="fab-delete" title="Remove">🗑️</button>
+      </div>
+    </section>
+
+    <!-- 3D LIVE PREVIEW -->
+    <section id="preview-wrap">
+      <div class="view-title">See it in 3D! (drag to look around)</div>
+      <canvas id="preview-canvas"></canvas>
+    </section>
+
+  </div>
+</div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
