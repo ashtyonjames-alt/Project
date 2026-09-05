@@ -16,10 +16,11 @@
     <div class="tool-group">
       <div class="tool-group-label">Draw</div>
       <button class="tool-btn active" data-tool="select" title="Select / Move">Select</button>
-      <button class="tool-btn" data-tool="wall" title="Draw wall segments">Wall</button>
-      <button class="tool-btn" data-tool="room" title="Draw closed room polygon">Room</button>
-      <button class="tool-btn" data-tool="door" title="Place a door on an edge">Door</button>
-      <button class="tool-btn" data-tool="window" title="Place a window on an edge">Window</button>
+      <button class="tool-btn" data-tool="wall" title="Draw line/wall segments (press A to arc a segment)">Wall</button>
+      <button class="tool-btn" data-tool="shape" title="Draw a closed shape/outline (press A to arc a segment)">Shape</button>
+      <button class="tool-btn" data-tool="circle" title="Draw a circle (center + radius)">Circle</button>
+      <button class="tool-btn" data-tool="door" title="Place a door">Door</button>
+      <button class="tool-btn" data-tool="window" title="Place a window">Window</button>
       <button class="tool-btn" data-tool="measure" title="Measure distance between two points">Measure</button>
       <button class="tool-btn" data-tool="label" title="Add a text label">Label</button>
     </div>
@@ -68,15 +69,16 @@
     <div class="tool-group">
       <div class="tool-group-label">Summary</div>
       <div id="summary-panel" class="summary-panel">
-        <div>Rooms: <span id="summary-room-count">0</span></div>
+        <div>Shapes: <span id="summary-room-count">0</span></div>
         <div>Total area: <span id="summary-total-area">0</span></div>
-        <div>Total wall length: <span id="summary-wall-length">0</span></div>
+        <div>Total line length: <span id="summary-wall-length">0</span></div>
       </div>
     </div>
   </aside>
 
   <!-- MAIN CANVAS AREA -->
   <main class="canvas-area">
+    <div id="view-tabs" class="view-tabs"></div>
     <div id="topbar" class="topbar">
       <span id="hint-text" class="hint-text">Click to start drawing. Press Enter to type an exact length. Esc to cancel.</span>
       <span id="coord-readout" class="coord-readout">x: 0, y: 0</span>
