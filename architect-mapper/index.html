@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architect Mapper</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- TOOLBAR -->
+  <aside id="toolbar" class="toolbar">
+    <div class="toolbar-brand">Architect Mapper</div>
+    <a class="switch-link" href="../simple-builder/index.html">🏠 Simple mode →</a>
+
+    <div class="tool-group">
+      <div class="tool-group-label">Draw</div>
+      <button class="tool-btn active" data-tool="select" title="Select / Move">Select</button>
+      <button class="tool-btn" data-tool="wall" title="Draw line/wall segments (press A to arc a segment)">Wall</button>
+      <button class="tool-btn" data-tool="shape" title="Draw a closed shape/outline (press A to arc a segment)">Shape</button>
+      <button class="tool-btn" data-tool="circle" title="Draw a circle (center + radius)">Circle</button>
+      <button class="tool-btn" data-tool="door" title="Place a door">Door</button>
+      <button class="tool-btn" data-tool="window" title="Place a window">Window</button>
+      <button class="tool-btn" data-tool="measure" title="Measure distance between two points">Measure</button>
+      <button class="tool-btn" data-tool="label" title="Add a text label">Label</button>
+    </div>
+
+    <div class="tool-group">
+      <div class="tool-group-label">Edit</div>
+      <button id="btn-undo" class="tool-btn" title="Undo (Ctrl+Z)">Undo</button>
+      <button id="btn-redo" class="tool-btn" title="Redo (Ctrl+Shift+Z)">Redo</button>
+      <button id="btn-delete" class="tool-btn" title="Delete selected (Del)">Delete</button>
+    </div>
+
+    <div class="tool-group">
+      <div class="tool-group-label">Precision</div>
+      <label class="field-row">
+        <span>Units</span>
+        <select id="units-select">
+          <option value="ft-in">ft / in</option>
+          <option value="m">meters</option>
+        </select>
+      </label>
+      <label class="field-row">
+        <span>Grid</span>
+        <input id="grid-size" type="number" min="0.05" step="0.05" value="0.5">
+      </label>
+      <label class="field-row checkbox-row">
+        <input id="snap-toggle" type="checkbox" checked>
+        <span>Snap to grid</span>
+      </label>
+      <label class="field-row">
+        <span>Wall thk.</span>
+        <input id="wall-thickness" type="number" min="0.05" step="0.05" value="0.5">
+      </label>
+    </div>
+
+    <div class="tool-group">
+      <div class="tool-group-label">Project</div>
+      <button id="btn-new" class="tool-btn">New</button>
+      <button id="btn-export-json" class="tool-btn">Export JSON</button>
+      <label class="tool-btn file-btn">
+        Import JSON
+        <input id="import-json-input" type="file" accept="application/json" hidden>
+      </label>
+      <button id="btn-export-png" class="tool-btn">Export PNG</button>
+    </div>
+
+    <div class="tool-group">
+      <div class="tool-group-label">Summary</div>
+      <div id="summary-panel" class="summary-panel">
+        <div>Shapes: <span id="summary-room-count">0</span></div>
+        <div>Total area: <span id="summary-total-area">0</span></div>
+        <div>Total line length: <span id="summary-wall-length">0</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CANVAS AREA -->
+  <main class="canvas-area">
+    <div id="view-tabs" class="view-tabs"></div>
+    <div id="topbar" class="topbar">
+      <span id="hint-text" class="hint-text">Click to start drawing. Press Enter to type an exact length. Esc to cancel.</span>
+      <span id="coord-readout" class="coord-readout">x: 0, y: 0</span>
+      <span class="zoom-controls">
+        <button id="zoom-out" class="zoom-btn" title="Zoom out">-</button>
+        <span id="zoom-level">100%</span>
+        <button id="zoom-in" class="zoom-btn" title="Zoom in">+</button>
+        <button id="zoom-reset" class="zoom-btn" title="Reset view">Reset</button>
+      </span>
+    </div>
+    <div id="canvas-wrap" class="canvas-wrap">
+      <canvas id="canvas"></canvas>
+      <input id="length-input" class="length-input" type="text" placeholder="length" hidden>
+    </div>
+  </main>
+
+  <!-- PROPERTIES PANEL -->
+  <aside id="properties" class="properties">
+    <div class="tool-group-label">Selected</div>
+    <div id="props-content" class="props-content">
+      <p class="props-empty">Nothing selected.</p>
+    </div>
+  </aside>
+
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>
