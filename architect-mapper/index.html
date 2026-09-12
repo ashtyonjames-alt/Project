@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Architect Mapper</title>
 <link rel="stylesheet" href="css/styles.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./js/vendor/three/three.module.js",
+    "three/addons/": "./js/vendor/three/addons/"
+  }
+}
+</script>
 </head>
 <body>
 <div id="app">
@@ -54,6 +62,10 @@
         <span>Wall thk.</span>
         <input id="wall-thickness" type="number" min="0.05" step="0.05" value="0.5">
       </label>
+      <label class="field-row">
+        <span>Wall height</span>
+        <input id="wall-height" type="number" min="0.5" step="0.1" value="2.7">
+      </label>
     </div>
 
     <div class="tool-group">
@@ -89,9 +101,11 @@
         <button id="zoom-in" class="zoom-btn" title="Zoom in">+</button>
         <button id="zoom-reset" class="zoom-btn" title="Reset view">Reset</button>
       </span>
+      <button id="btn-3d-toggle" class="zoom-btn view3d-btn" title="View the footprint as a 3D model">3D View</button>
     </div>
     <div id="canvas-wrap" class="canvas-wrap">
       <canvas id="canvas"></canvas>
+      <canvas id="canvas-3d" hidden></canvas>
       <input id="length-input" class="length-input" type="text" placeholder="length" hidden>
     </div>
   </main>
@@ -106,5 +120,6 @@
 
 </div>
 <script src="js/app.js"></script>
+<script type="module" src="js/three3d.js"></script>
 </body>
 </html>

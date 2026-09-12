@@ -201,6 +201,8 @@
     gridSize: 0.5,
     snapEnabled: true,
     wallThickness: 0.15,
+    wallHeight: 2.7,
+    windowSill: 0.9,
     doorWidth: 0.9,
     windowWidth: 1.2,
     doorHeight: 2.03,
@@ -243,6 +245,9 @@
   const gridSizeInput = document.getElementById('grid-size');
   const snapToggle = document.getElementById('snap-toggle');
   const wallThicknessInput = document.getElementById('wall-thickness');
+  const wallHeightInput = document.getElementById('wall-height');
+  const btn3DToggle = document.getElementById('btn-3d-toggle');
+  const canvas3D = document.getElementById('canvas-3d');
   const btnNew = document.getElementById('btn-new');
   const btnExportJson = document.getElementById('btn-export-json');
   const importJsonInput = document.getElementById('import-json-input');
@@ -290,6 +295,7 @@
     v.future = [];
     saveLocal();
     render();
+    if (v.kind === 'footprint') requestRebuild3D();
   }
 
   function undo() {
@@ -301,6 +307,7 @@
     saveLocal();
     showProperties();
     render();
+    if (v.kind === 'footprint') requestRebuild3D();
   }
 
   function redo() {
@@ -312,6 +319,7 @@
     saveLocal();
     showProperties();
     render();
+    if (v.kind === 'footprint') requestRebuild3D();
   }
 
   // ---------------------------------------------------------------------
@@ -322,6 +330,7 @@
       units: state.units,
       gridSize: state.gridSize,
       wallThickness: state.wallThickness,
+      wallHeight: state.wallHeight,
       doorWidth: state.doorWidth,
       windowWidth: state.windowWidth,
       doorHeight: state.doorHeight,
@@ -339,6 +348,7 @@
     if (data.units) state.units = data.units;
     if (data.gridSize) state.gridSize = data.gridSize;
     if (data.wallThickness) state.wallThickness = data.wallThickness;
+    if (data.wallHeight) state.wallHeight = data.wallHeight;
     if (data.doorWidth) state.doorWidth = data.doorWidth;
     if (data.windowWidth) state.windowWidth = data.windowWidth;
     if (data.doorHeight) state.doorHeight = data.doorHeight;
@@ -461,6 +471,70 @@
       if (el.type === 'circle') consider(circlePolygon(el.cx, el.cy, el.r), true);
     }
     return best;
+  }
+
+  // ---------------------------------------------------------------------
+  // 3D model export (built from the Footprint view only; elevations are
+  // independent 2D drawings and aren't spatially linked into the 3D model)
+  // ---------------------------------------------------------------------
+  function build3DModel() {
+    const elements = state.views.footprint.elements;
+    const segments = [];
+    const circles = [];
+
+    function addEdges(points, closed, thickness) {
+      for (const [a, b] of polylineEdges(points, closed)) {
+        const bulge = a.bulge || 0;
+        if (!bulge) {
+          segments.push({ ax: a.x, ay: a.y, bx: b.x, by: b.y, thickness, openings: [], arc: false });
+        } else {
+          const pts = expandEdge(a, b);
+          for (let i = 0; i < pts.length - 1; i++) {
+            segments.push({ ax: pts[i].x, ay: pts[i].y, bx: pts[i + 1].x, by: pts[i + 1].y, thickness, openings: [], arc: true });
+          }
+        }
+      }
+    }
+
+    for (const el of elements) {
+      if (el.type === 'wall') addEdges(el.points, false, el.thickness);
+      else if (el.type === 'shape') addEdges(el.points, true, el.thickness);
+      else if (el.type === 'circle') circles.push({ cx: el.cx, cy: el.cy, r: el.r, thickness: state.wallThickness, overlays: [] });
+    }
+
+    for (const el of elements) {
+      if (el.type !== 'door' && el.type !== 'window') continue;
+      const pt = { x: el.x, y: el.y };
+      let best = null;
+      for (const seg of segments) {
+        const r = pointToSegmentDistance(pt, { x: seg.ax, y: seg.ay }, { x: seg.bx, y: seg.by });
+        if (!best || r.dist < best.dist) best = { dist: r.dist, kind: 'segment', seg, t: r.t };
+      }
+      for (const c of circles) {
+        const d = Math.abs(distance(pt, { x: c.cx, y: c.cy }) - c.r);
+        if (!best || d < best.dist) best = { dist: d, kind: 'circle', c };
+      }
+      if (!best) continue;
+      const sill = el.type === 'window' ? state.windowSill : 0;
+      const height = el.type === 'window' ? state.windowHeight : state.doorHeight;
+      if (best.kind === 'segment' && !best.seg.arc) {
+        best.seg.openings.push({ t: best.t, width: el.width, kind: el.type, sill, height });
+      } else if (best.kind === 'circle') {
+        const angle = Math.atan2(el.y - best.c.cy, el.x - best.c.cx);
+        best.c.overlays.push({ angle, width: el.width, kind: el.type, sill, height });
+      }
+      // a door/window whose nearest wall is an arc segment gets no cutout or
+      // overlay - true holes in curved walls aren't modeled (see README note)
+    }
+
+    return { segments, circles, wallHeight: state.wallHeight };
+  }
+
+  let am3dReady = false;
+  window.AM_onReady = function () { am3dReady = true; requestRebuild3D(); };
+  function requestRebuild3D() {
+    if (!am3dReady || !window.AM3D) return;
+    window.AM3D.rebuild(build3DModel());
   }
 
   // ---------------------------------------------------------------------
@@ -1500,7 +1574,17 @@
   unitsSelect.addEventListener('change', () => { state.units = unitsSelect.value; saveLocal(); render(); });
   gridSizeInput.addEventListener('change', () => { state.gridSize = parseFloat(gridSizeInput.value) || 0.5; saveLocal(); render(); });
   snapToggle.addEventListener('change', () => { state.snapEnabled = snapToggle.checked; });
-  wallThicknessInput.addEventListener('change', () => { state.wallThickness = parseFloat(wallThicknessInput.value) || 0.15; saveLocal(); });
+  wallThicknessInput.addEventListener('change', () => { state.wallThickness = parseFloat(wallThicknessInput.value) || 0.15; saveLocal(); requestRebuild3D(); });
+  wallHeightInput.addEventListener('change', () => { state.wallHeight = parseFloat(wallHeightInput.value) || 2.7; saveLocal(); requestRebuild3D(); });
+
+  btn3DToggle.addEventListener('click', () => {
+    const showing3D = !canvas3D.hidden;
+    const next = !showing3D;
+    canvas.hidden = next;
+    btn3DToggle.classList.toggle('active', next);
+    btn3DToggle.textContent = next ? '2D View' : '3D View';
+    if (window.AM3D) window.AM3D.setVisible(next);
+  });
 
   btnNew.addEventListener('click', () => {
     const view = currentView();
@@ -1513,6 +1597,7 @@
     saveLocal();
     showProperties();
     render();
+    if (view.kind === 'footprint') requestRebuild3D();
   });
 
   btnExportJson.addEventListener('click', () => {
@@ -1537,9 +1622,11 @@
         unitsSelect.value = state.units;
         gridSizeInput.value = state.gridSize;
         wallThicknessInput.value = state.wallThickness;
+        wallHeightInput.value = state.wallHeight;
         saveLocal();
         renderViewTabs();
         switchView('footprint', true);
+        requestRebuild3D();
       } catch (e) {
         window.alert('Could not import file: ' + e.message);
       }
@@ -1564,6 +1651,7 @@
     unitsSelect.value = state.units;
     gridSizeInput.value = state.gridSize;
     wallThicknessInput.value = state.wallThickness;
+    wallHeightInput.value = state.wallHeight;
     snapToggle.checked = state.snapEnabled;
     resizeCanvas();
     window.addEventListener('resize', handleResize);
@@ -1573,6 +1661,7 @@
     updateHint();
     showProperties();
     render();
+    requestRebuild3D();
   }
 
   function handleResize() { resizeCanvas(); render(); }
